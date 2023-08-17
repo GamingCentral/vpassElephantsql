@@ -1,0 +1,1 @@
+postgres://piciqucz:oD0UWQowMN4O3Jasjd32c-7qX-hetspn@bubble.db.elephantsql.com/piciqucz

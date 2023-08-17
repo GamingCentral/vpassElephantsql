@@ -1,0 +1,46 @@
+These are always changing but dont delete any :D
+
+
+* signify mandertory and functional requirments.
+{} represents updation requirments.
+no notation employs changes will soon be done.
+
+
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+slno    FILE                CLASS/LINE         TYPE             NEEDS                                        review-need?
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+1       uielephant.py       login [10]         front            needs label for the credentials               pending
+2*      project whole       NULL               back             checking for active internet                  pending
+3*           ,,             NULL               back             transaction failure management                pending
+4*           ,,             NULL               back             recovery program?                             pending
+5       uielephant.py       login [41]         back             unexpected error: need url sanity             pending/no-knowledge
+
+
+
+
+
+
+
+
+
+
+
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ADDITIONAL NOTES FOR DEVS:
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+1.  needs to check if :
+        I. if entered or not ("Error Message: Enter credentials)
+        II. if entered details are wrong
+            [1]--> database url wrong or connection failure: (Error Message: URL Wrong)
+            [2]--> credentials dont exist in database: (Error Message: Credentials Invalid: Try another combination or password reset using email??[update--only])
+
+2*  what if the internet fails all of sudden? how do you check that?
+
+5. URL error: Enter valid URL:  connection to server at "localhost" (::1), port 5432 failed: Connection refused (0x0000274D/10061)
+	Is the server running on that host and accepting TCP/IP connections?
+connection to server at "localhost" (127.0.0.1), port 5432 failed: Connection refused (0x0000274D/10061)
+	Is the server running on that host and accepting TCP/IP connections?
+
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
