@@ -8,7 +8,7 @@ class checkconnection:
         try:
             conn = psycopg2.connect(
                 database=self.dburl.path[1:],
-                user=self.dburl.username,``
+                user=self.dburl.username,
                 password=self.dburl.password,
                 host=self.dburl.hostname,
                 port=self.dburl.port
