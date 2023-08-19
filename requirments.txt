@@ -7,17 +7,17 @@ no notation employs changes will soon be done.
 
 
 ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-slno    FILE                CLASS/LINE         TYPE             NEEDS                                        review-need?
+slno    FILE                CLASS/LINE          TYPE             NEEDS                                        review-need?
 ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-1       uielephant.py       login [10]         front            needs label for the credentials               pending
-2*      project whole       NULL               back             checking for active internet                  pending
-3*           ,,             NULL               back             transaction failure management                pending
-4*           ,,             NULL               back             recovery program?                             pending
-5       uielephant.py       login [41]         back             unexpected error: need url sanity             pending/no-knowledge
-
-
-
+1       uielephant.py       login [15]          front            needs label for the credentials               pending
+2*      project whole       NULL                back             checking for active internet                  pending
+3*           ,,             NULL                back             transaction failure management                pending
+4*           ,,             NULL                back             recovery program?                             pending
+5       uielephant.py       login [51]          back             unexpected error: need url sanity             pending--> DONE^
+6       uielephant.py       closeconnection[10] back             put this in class if needed                   pending
+7       uielephant.py       66                  back             how to close the rest of connections          pending
+8       uielephant          81                  back             check username,pass and get adminprevilage    pending
 
 
 
@@ -43,4 +43,8 @@ ADDITIONAL NOTES FOR DEVS:
 connection to server at "localhost" (127.0.0.1), port 5432 failed: Connection refused (0x0000274D/10061)
 	Is the server running on that host and accepting TCP/IP connections?
 
+
+. need a log based recovery which gets looked into the second i press login-submit button
+  this checks if there are any failed trasactions and roll back the changes that was made 
+  for example the outime was not noted and qr got changed?
 ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
