@@ -87,13 +87,12 @@ class login(ctk.CTk):
                             self.admin=True  #user is an admin
                     else:
                         self.update_error_label("Invalid Credentials--Please retry combination")
+                    closeconnection(connection)     # <----------- current connection being closed here
+                    del self.connections_dict[dburl]
                     #further operations or re-entering the detials
                     #got connection now check for credentials
             except Exception as e:
                 print(e)
-            finally:
-                closeconnection(connection)     # <----------- current connection being closed here
-                del self.connections_dict[dburl]
 
     def update_error_label(self, error_message):
         self.error_label.configure(text=error_message)

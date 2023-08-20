@@ -18,8 +18,7 @@ slno    FILE                CLASS/LINE          TYPE             NEEDS          
 6       uielephant.py       closeconnection[10] back             put this in class if needed                   pending
 7       uielephant.py       66                  back             how to close the rest of connections          pending--> DONE.
 8       uielephant          81                  back             check username,pass and get adminprevilage    pending--> DONE.
--       createtables.py     --                  back             make tables in the database                   pending
-
+9       createtables.py     71                  back             make tables in the database                   pending
 
 
 
