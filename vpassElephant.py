@@ -13,9 +13,7 @@ class checkconnection:
                 host=self.dburl.hostname,
                 port=self.dburl.port
             )
-            arr=[]
-            arr.append(conn)
-            return arr   #pool of connections, REMEMBER THIS IS NOT CLOSED!!! NEED TO BE CLOSED IF WINDOW CLOSED
+            return conn   #pool of connections, REMEMBER THIS IS NOT CLOSED!!! NEED TO BE CLOSED IF WINDOW CLOSED
         
         except Exception as e:
             return str(e)

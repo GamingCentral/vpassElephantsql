@@ -8,7 +8,19 @@ class creds:
         #check if credentials are valid or not
         try:
             with self.conn.cursor() as cursor:
-                cursor.execute("SELECT LOWER(username), password,Admin FROM creds")
-                rows=cursor.fetchall()
-                for row in rows:
-                    if str(self.username)
+                cmd="select password,admin from creds where lower(username)=?"
+                cursor.execute(cmd,str(self.username).lower(),)
+                res=cursor.fetchone()
+                if res:
+                    password,admin=res
+                    if str(password)==self.password:
+                        return admin
+                return None #password wrong or invalid credentials as a whole
+        except Exception as e:
+            print("Error in checking credentials!: ",e)
+            return None
+        
+def credchecker(username,password,conn):
+    c=creds(username,password,conn)
+    res=c.checkcreds()
+    return res

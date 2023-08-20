@@ -10,15 +10,15 @@ no notation employs changes will soon be done.
 slno    FILE                CLASS/LINE          TYPE             NEEDS                                        review-need?
 ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-1       uielephant.py       login [15]          front            needs label for the credentials               pending
+1       uielephant.py       login [15]          front            needs label for the credentials               pending--> DONE^
 2*      project whole       NULL                back             checking for active internet                  pending
 3*           ,,             NULL                back             transaction failure management                pending
 4*           ,,             NULL                back             recovery program?                             pending
 5       uielephant.py       login [51]          back             unexpected error: need url sanity             pending--> DONE^
 6       uielephant.py       closeconnection[10] back             put this in class if needed                   pending
-7       uielephant.py       66                  back             how to close the rest of connections          pending
-8       uielephant          81                  back             check username,pass and get adminprevilage    pending
-
+7       uielephant.py       66                  back             how to close the rest of connections          pending--> DONE.
+8       uielephant          81                  back             check username,pass and get adminprevilage    pending--> DONE.
+-       createtables.py     --                  back             make tables in the database                   pending
 
 
 

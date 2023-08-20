@@ -3,25 +3,24 @@ from customtkinter import CTkLabel as label
 from customtkinter import CTkEntry as entry
 from customtkinter import CTkButton as button
 import vpassElephant as vp
+import checkCreds as cc
 
 ctk.set_appearance_mode("dark")
 ctk.set_default_color_theme("blue")
 
-def closeconnection(arr):  # <--------------- put it in class later
+def closeconnection(conn):  # <--------------- put it in class later
     try:
-        for conn in arr:
-            if conn.closed==0:
-                conn.close()
-                print("connection closed: ",str(conn))
-            arr.remove(conn)
-        return arr
+        if conn.closed==0:
+            conn.close()
+            print("connection closed: \n",str(conn))
     except Exception as e:
-        return arr
+        print("Error Closing Connection to database: \n",e)
 
 class login(ctk.CTk):
     def __init__(self):
         super().__init__()
         self.admin=False
+        self.connections_dict={}
         self.minsize(600,600)
         self.title("Login page")
         self.rowconfigure(0,weight=0)
@@ -72,18 +71,29 @@ class login(ctk.CTk):
         else: #need to check for credentials and dburl validity
             #checking url validity
             try:
-                res=vp.runcheckconnect(dburl)
-                if isinstance(res,str):
+                if dburl in self.connections_dict: #the connection exists
+                    connection=self.connections_dict[dburl]  #fetches an existing connection object
+                else:
+                    connection=vp.runcheckconnect(dburl)
+                if isinstance(connection,str):
                     self.update_error_label("Error: Database URL Not Found--Check the url again.")
-                else: #returns connection array
+                else: #returns connection
                     self.update_error_label("")
-                    print("Array recieved: Connection Success! ",res)
+                    print("Array recieved: Connection Success! ",connection)
+                    self.connections_dict[dburl]=connection #added connection to the dict
+                    admin=cc.credchecker(username,password,connection) #returns admin value(int 0 or 1) or None 
+                    if admin is not None:
+                        if admin==1 or admin=='1':
+                            self.admin=True  #user is an admin
+                    else:
+                        self.update_error_label("Invalid Credentials--Please retry combination")
+                    #further operations or re-entering the detials
                     #got connection now check for credentials
-                    res=closeconnection(res)     # <----------- current connection being closed here
-                    if res!=[]:
-                        self.update_error_label("All instances were not closed! tf we do now?")  #now what we do?
             except Exception as e:
                 print(e)
+            finally:
+                closeconnection(connection)     # <----------- current connection being closed here
+                del self.connections_dict[dburl]
 
     def update_error_label(self, error_message):
         self.error_label.configure(text=error_message)
