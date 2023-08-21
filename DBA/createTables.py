@@ -68,6 +68,7 @@ class login(ctk.CTk):
                     self.update_error_label("")
                     print("Array recieved: Connection Success! ",connection)
                     self.connections_dict[dburl]=connection #added connection to the dict
+                    
                     #operations here
                     closeconnection(connection)     # <----------- current connection being closed here
                     del self.connections_dict[dburl]

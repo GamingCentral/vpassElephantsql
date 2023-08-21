@@ -19,7 +19,7 @@ slno    FILE                CLASS/LINE          TYPE             NEEDS          
 7       uielephant.py       66                  back             how to close the rest of connections          pending--> DONE.
 8       uielephant          81                  back             check username,pass and get adminprevilage    pending--> DONE.
 9       createtables.py     71                  back             make tables in the database                   pending
-
+10      ----                --                  back             backup how?                                   pending
 
 
 
@@ -46,4 +46,8 @@ connection to server at "localhost" (127.0.0.1), port 5432 failed: Connection re
 . need a log based recovery which gets looked into the second i press login-submit button
   this checks if there are any failed trasactions and roll back the changes that was made 
   for example the outime was not noted and qr got changed?
+
+10. log based or timestamp based recovery for transaction and backup at the end of the day should be taken (should i delete prev?)
+. END OF THE DAY ROTUINES: (do when the date last run changes??)
+
 ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
