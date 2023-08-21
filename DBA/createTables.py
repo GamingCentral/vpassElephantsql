@@ -14,13 +14,13 @@ def closeconnection(conn):  # <--------------- put it in class later
 class createtables(tk.Tk):
     def __init__(self):
         super().__init__()
-        self.title("CreateTables")
+        self.title("Create Tables")
         self.minsize(800,400)
         self.connections_dict = {}
         self.geometry_centered(800,400)
         self.configure(bg='#141414')
 
-        self.title_label = tk.Label(self, text="Login", font=("courier new", 45, "bold"), fg="#426ae3", bg="#141414")
+        self.title_label = tk.Label(self, text="Make Database", font=("courier new", 45, "bold"), fg="#426ae3", bg="#141414")
         self.title_label.pack(pady=20)
 
         self.databaseurl_label = tk.Label(self, text="Database URL", font=("bookman old style", 15),fg="gray", bg="#141414")

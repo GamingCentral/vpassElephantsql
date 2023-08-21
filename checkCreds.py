@@ -8,8 +8,8 @@ class creds:
         #check if credentials are valid or not
         try:
             with self.conn.cursor() as cursor:
-                cmd="select password,admin from creds where lower(username)=?"
-                cursor.execute(cmd,str(self.username).lower(),)
+                cmd="select password,admin from creds where lower(username)=%s"
+                cursor.execute(cmd,(str(self.username).lower(),))
                 res=cursor.fetchone()
                 if res:
                     password,admin=res
