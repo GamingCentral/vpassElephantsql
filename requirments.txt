@@ -21,7 +21,7 @@ slno    FILE                CLASS/LINE          TYPE             NEEDS          
 9       createtables.py     71                  back&front       make tables in the database                   pending--> DONE.
 10      ----                --                  back             backup how?                                   pending
 11      dropalltables.py    --                  back&front       drop all tables                               pending--> DONE.   
-
+12  tkinterui,vpassElephant --                  back             connection pooling needs implementation       pending
 
 
 
@@ -35,7 +35,9 @@ ADDITIONAL NOTES FOR DEVS:
             [1]--> database url wrong or connection failure: (Error Message: URL Wrong)
             [2]--> credentials dont exist in database: (Error Message: Credentials Invalid: Try another combination or password reset using email??[update--only])
 
-2*  what if the internet fails all of sudden? how do you check that?
+2*  what if the internet fails all of sudden? how do you check that? so should i make an offline mode shadow table that handles the operations
+while the main has no active internet? then when network comes should i take a connection and then upload all the data to main then delete them
+from offline?
 
 5. URL error: Enter valid URL:  connection to server at "localhost" (::1), port 5432 failed: Connection refused (0x0000274D/10061)
 	Is the server running on that host and accepting TCP/IP connections?
