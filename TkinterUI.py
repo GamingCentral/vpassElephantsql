@@ -73,14 +73,20 @@ class Login(tk.Tk):
             try:
                 if dburl in self.connections_dict: #the connection exists
                     connection=self.connections_dict[dburl]  #fetches an existing connection object
+                    print("Using already existing connection in dict")
+                    self.update_error_label("")
+                    credcheck=1
                 else:
                     connection=vp.runcheckconnect(dburl)
-                if isinstance(connection,str):
-                    self.update_error_label("Error: Database URL Not Found--Check the url again.")
-                else: #returns connection
-                    self.update_error_label("")
-                    print("Array recieved: Connection Success! ",connection)
-                    self.connections_dict[dburl]=connection #added connection to the dict
+                    if isinstance(connection,str):
+                        self.update_error_label("Error: Database URL Not Found--Check the url again.")
+                        credcheck=0
+                    else: #returns connection
+                        self.connections_dict[dburl]=connection #added connection to the dict
+                        print("This is new connection and added to dict")
+                        self.update_error_label("")
+                        credcheck=1
+                if credcheck==1:
                     admin=cc.credchecker(username,password,connection) #returns admin value(int 0 or 1) or None 
                     if admin is not None:
                         if admin==1 or admin=='1':
@@ -88,17 +94,28 @@ class Login(tk.Tk):
                         self.update_error_label("next window shows up")
                     else:
                         self.update_error_label("Invalid Credentials--Please retry combination")
-                    closeconnection(connection)     # <----------- current connection being closed here
-                    del self.connections_dict[dburl]
-                    #further operations or re-entering the detials
-                    #got connection now check for credentials
+                        #further operations or re-entering the detials
+                        #got connection now check for credentials
             except Exception as e:
                 print(e)
 
     def update_error_label(self, message):
         self.error_label.config(text=message)
+    
+    def on_closing(self):
+        if self.connections_dict!={}:
+            for dburl in self.connections_dict:
+                closeconnection(self.connections_dict[dburl])
+                print("Closed: ",self.connections_dict[dburl])
+            self.connections_dict={}
+            print("all connections are closed")
+            self.destroy()
+        else:
+            print("Looks like all connections are closed!")
+            self.destroy()
 
 
 if __name__ == "__main__":
     app = Login()
+    app.protocol("WM_DELETE_WINDOW",app.on_closing)
     app.mainloop()
