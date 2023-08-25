@@ -1,21 +1,32 @@
 import psycopg2.pool
+import threading
 import time
 import urllib.parse as up
 
 class ConnectionPool:
-    def __init__(self, db_url):
+    def __init__(self, db_url, minconn, maxconn):
         parsed_url = up.urlparse(db_url)
+        db_params = {
+            "database": parsed_url.path[1:],
+            "user": parsed_url.username,
+            "password": parsed_url.password,
+            "host": parsed_url.hostname,
+            "port": parsed_url.port
+        }
+
         self.connection_pool = psycopg2.pool.ThreadedConnectionPool(
-            minconn=1,
-            maxconn=10,
-            database=parsed_url.path[1:],
-            user=parsed_url.username,
-            password=parsed_url.password,
-            host=parsed_url.hostname,
-            port=parsed_url.port
+            minconn=minconn,
+            maxconn=maxconn,
+            **db_params
         )
 
+        self.monitor_thread = threading.Thread(target=self.monitor_pool, daemon=True)
+        self.monitor_thread_started = False  # Flag to ensure one monitor thread per pool
+
     def get_connection(self):
+        if not self.monitor_thread_started:
+            self.monitor_thread.start()
+            self.monitor_thread_started = True
         return self.connection_pool.getconn()
 
     def return_connection(self, conn):
@@ -43,18 +54,9 @@ class ConnectionPool:
         else:
             print("Could not recover connection:", conn)
 
-# Usage
-if __name__ == "__main__":
-    db_url = "postgres://your_user:your_password@your_host:your_port/your_database"
-    pool = ConnectionPool(db_url)
-    
-    # Start a thread to monitor and recover connections
-    import threading
-    monitor_thread = threading.Thread(target=pool.monitor_pool)
-    monitor_thread.start()
 
-    try:
-        # Perform your database operations using 'conn'
-        pass
-    finally:
-        pool.close_pool()
+# Usage
+def poolcreate(dburl):
+    db_url = dburl
+    pool = ConnectionPool(db_url, minconn=1, maxconn=10)
+    return pool

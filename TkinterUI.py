@@ -79,7 +79,7 @@ class Login(tk.Tk):
                 else:
                     connection=vp.runcheckconnect(dburl)
                     if isinstance(connection,str):
-                        self.update_error_label("Error: Database URL Not Found--Check the url again.")
+                        self.update_error_label("Error: Database URL Not Found--Check the url again\nIf this problem persists check for your internet connection")
                         credcheck=0
                     else: #returns connection
                         self.connections_dict[dburl]=connection #added connection to the dict
