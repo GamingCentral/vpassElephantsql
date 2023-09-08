@@ -1,15 +1,5 @@
 import tkinter as tk
-import vpcheck as vp
-
-
-def closeconnection(conn):  # <--------------- put it in class later
-    try:
-        if conn.closed==0:
-            conn.close()
-            print("connection closed: \n",str(conn))
-    except Exception as e:
-        print("Error Closing Connection to database: \n",e)
-
+import connectionpool as cp
 
 class createtables(tk.Tk):
     def __init__(self):
@@ -20,7 +10,7 @@ class createtables(tk.Tk):
         self.geometry_centered(800,400)
         self.configure(bg='#141414')
 
-        self.title_label = tk.Label(self, text="Make Database", font=("courier new", 45, "bold"), fg="#426ae3", bg="#141414")
+        self.title_label = tk.Label(self, text="Make Database Tables", font=("courier new", 45, "bold"), fg="#426ae3", bg="#141414")
         self.title_label.pack(pady=20)
 
         self.databaseurl_label = tk.Label(self, text="Database URL", font=("bookman old style", 15),fg="gray", bg="#141414")
@@ -51,41 +41,48 @@ class createtables(tk.Tk):
         else: #need to check for credentials and dburl validity
             #checking url validity
             try:
-                if dburl in self.connections_dict: #the connection exists
-                    connection=self.connections_dict[dburl]  #fetches an existing connection object
-                else:
-                    connection=vp.runcheckconnect(dburl)
+                self.pool=cp.poolcreate(dburl)
+                connection=self.pool.get_connection()
                 if isinstance(connection,str):
-                    self.update_error_label("Error: Database URL Not Found--Check the url again.")
+                    self.update_error_label("Error: Database URL Not Found / No Internet Connection")
                 else: #returns connection
                     self.update_error_label("")
-                    print("Array recieved: Connection Success! ",connection)
-                    self.connections_dict[dburl]=connection #added connection to the dict
-                    #code here
-                    create_qravailable_query="CREATE TABLE IF NOT EXISTS QRavailable (qrid VARCHAR(50) PRIMARY KEY,availability integer default 1 not null)"
-                    create_records_query = "CREATE TABLE IF NOT EXISTS Records (vid INT PRIMARY KEY,qrid VARCHAR(50),name VARCHAR(25),phno BIGINT,email VARCHAR(40),reasonofvisit VARCHAR(75),ptm VARCHAR(25),IT varchar(20),OT varchar(20) default NULL,foreign key(qrid) references qravailable(qrid))"
-                    create_invisitors_query = "CREATE TABLE IF NOT EXISTS InVisitors (slno int primary key,vid INT,qrid VARCHAR(50),name VARCHAR(25),phno BIGINT,email VARCHAR(40),reasonofvisit VARCHAR(75),ptm VARCHAR(25),IT varchar(20),foreign key(vid) references Records(vid))"
-                    create_faculty_query = "CREATE TABLE IF NOT EXISTS faculty (name VARCHAR(25) PRIMARY KEY,email varchar(40) not null, department varchar(10) not null, contact bigint)"
-                    create_table_creds= "CREATE TABLE IF NOT EXISTS creds (username varchar(30) primary key, password varchar(30) not null, Admin Integer not null default 0)"
                     try:
-                        with connection.cursor() as cursor:
-                            cursor.execute(create_qravailable_query)
-                            cursor.execute(create_records_query)
-                            cursor.execute(create_invisitors_query)
-                            cursor.execute(create_faculty_query)
-                            cursor.execute(create_table_creds)
-                            connection.commit()
-                            cursor.execute("insert into creds values('Admin','123456','1')")
-                            connection.commit()
+                        res=self.tablecreate(connection)
+                        if res==1:
                             self.update_error_label("Created all tables required: you can now close this window")
+                            self.pool.return_connection(connection)
+                            self.pool.close_pool()
+                        else:
+                            res=self.pool.recover_connection(connection)
+                            if res==0: #connection not recovered
+                                self.pool.return_connection(connection)
+                            self.update_error_label("Unable to get connection / No Internet Connection")
                     except Exception as e:
                         print(e)
-                    closeconnection(connection)     # <----------- current connection being closed here
-                    del self.connections_dict[dburl]
-
             except Exception as e:
                 print(e)
 
+    def tablecreate(self,connection):
+        create_qravailable_query="CREATE TABLE IF NOT EXISTS QRavailable (qrid VARCHAR(50) PRIMARY KEY,availability integer default 1 not null)"
+        create_records_query = "CREATE TABLE IF NOT EXISTS Records (vid INT PRIMARY KEY,qrid VARCHAR(50),name VARCHAR(25),phno BIGINT,email VARCHAR(40),reasonofvisit VARCHAR(75),ptm VARCHAR(25),IT varchar(20),OT varchar(20) default NULL,foreign key(qrid) references qravailable(qrid))"
+        create_invisitors_query = "CREATE TABLE IF NOT EXISTS InVisitors (slno int primary key,vid INT,qrid VARCHAR(50),name VARCHAR(25),phno BIGINT,email VARCHAR(40),reasonofvisit VARCHAR(75),ptm VARCHAR(25),IT varchar(20),foreign key(vid) references Records(vid))"
+        create_faculty_query = "CREATE TABLE IF NOT EXISTS faculty (name VARCHAR(25) PRIMARY KEY,email varchar(40) not null, department varchar(10) not null, contact bigint)"
+        create_table_creds= "CREATE TABLE IF NOT EXISTS creds (username varchar(30) primary key, password varchar(30) not null, Admin Integer not null default 0)"
+        try:
+            with connection.cursor() as cursor:
+                cursor.execute(create_qravailable_query)
+                cursor.execute(create_records_query)
+                cursor.execute(create_invisitors_query)
+                cursor.execute(create_faculty_query)
+                cursor.execute(create_table_creds)
+                connection.commit()
+                cursor.execute("insert into creds values('Admin','123456','1')")
+                connection.commit()
+            return 1
+        except Exception as e:
+            print(e)
+            return 0
         
     def update_error_label(self, message):
         self.error_label.config(text=message)

@@ -1,15 +1,5 @@
 import tkinter as tk
-import vpcheck as vp
-
-
-def closeconnection(conn):  # <--------------- put it in class later
-    try:
-        if conn.closed==0:
-            conn.close()
-            print("connection closed: \n",str(conn))
-    except Exception as e:
-        print("Error Closing Connection to database: \n",e)
-
+import connectionpool as cp
 
 class createtables(tk.Tk):
     def __init__(self):
@@ -20,7 +10,7 @@ class createtables(tk.Tk):
         self.geometry_centered(800,400)
         self.configure(bg='#141414')
 
-        self.title_label = tk.Label(self, text="Delete Database", font=("courier new", 45, "bold"), fg="#426ae3", bg="#141414")
+        self.title_label = tk.Label(self, text="Delete Database Tables", font=("courier new", 45, "bold"), fg="#426ae3", bg="#141414")
         self.title_label.pack(pady=20)
 
         self.databaseurl_label = tk.Label(self, text="Database URL", font=("bookman old style", 15),fg="gray", bg="#141414")
@@ -51,39 +41,48 @@ class createtables(tk.Tk):
         else: #need to check for credentials and dburl validity
             #checking url validity
             try:
-                if dburl in self.connections_dict: #the connection exists
-                    connection=self.connections_dict[dburl]  #fetches an existing connection object
-                else:
-                    connection=vp.runcheckconnect(dburl)
+                self.pool=cp.poolcreate(dburl)
+                connection=self.pool.get_connection()
                 if isinstance(connection,str):
-                    self.update_error_label("Error: Database URL Not Found--Check the url again.")
+                    self.update_error_label("Error:No Internet Connection/DB URL not found")
                 else: #returns connection
                     self.update_error_label("")
-                    print("Array recieved: Connection Success! ",connection)
-                    self.connections_dict[dburl]=connection #added connection to the dict
-                    #code here
-                    drop_qravailable_query="DROP TABLE IF EXISTS QRavailable"
-                    drop_records_query = "DROP TABLE IF EXISTS Records"
-                    drop_invisitors_query = "DROP TABLE IF EXISTS InVisitors"
-                    drop_faculty_query = "DROP TABLE IF EXISTS faculty"
-                    drop_table_creds= "DROP TABLE IF EXISTS creds"
                     try:
-                        with connection.cursor() as cursor:
-                            cursor.execute(drop_table_creds)
-                            cursor.execute(drop_faculty_query)
-                            cursor.execute(drop_invisitors_query)
-                            cursor.execute(drop_records_query)
-                            cursor.execute(drop_qravailable_query)
-                            connection.commit()
-                            self.update_error_label("Dropped all tables: you can now close this window")
+                        res=self.tabledrop(connection)
+                        if res==1:
+                            self.update_error_label("Dropped all tables required: you can now close this window")
+                            self.pool.return_connection(connection)
+                            self.pool.close_pool()
+                        else:
+                            res=self.pool.recover_connection(connection)
+                            if res==0: #connection not recovered
+                                self.pool.return_connection(connection)
+                            self.update_error_label("Unable to get connection / No Internet Connection")
                     except Exception as e:
                         print(e)
-                    closeconnection(connection)     # <----------- current connection being closed here
-                    del self.connections_dict[dburl]
-
+                        self.update_error_label("Abnormal server connection termination")
             except Exception as e:
                 print(e)
+                self.update_error_label("Error:No Internet Connection/DB URL not found")
 
+    def tabledrop(self,connection):
+        drop_qravailable_query="DROP TABLE IF EXISTS QRavailable"
+        drop_records_query = "DROP TABLE IF EXISTS Records"
+        drop_invisitors_query = "DROP TABLE IF EXISTS InVisitors"
+        drop_faculty_query = "DROP TABLE IF EXISTS faculty"
+        drop_table_creds= "DROP TABLE IF EXISTS creds"
+        try:
+            with connection.cursor() as cursor:
+                cursor.execute(drop_table_creds)
+                cursor.execute(drop_faculty_query)
+                cursor.execute(drop_invisitors_query)
+                cursor.execute(drop_records_query)
+                cursor.execute(drop_qravailable_query)
+                connection.commit()
+            return 1
+        except Exception as e:
+            print(e)
+            return 0
         
     def update_error_label(self, message):
         self.error_label.config(text=message)

@@ -60,7 +60,6 @@ class ConnectionPool:
             print("Could not recover connection:", conn)
             return 0
 
-
 # Usage
 def poolcreate(dburl):
     db_url = dburl
