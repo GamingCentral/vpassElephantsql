@@ -12,8 +12,10 @@ import connectionpool as cp
         print("Error Closing Connection to database: \n",e)'''
 
 def connectionInstance(connection):
+    #print("in isinstance")
     if isinstance(connection,str):
-            return 0 #connection not valid
+        #print("returning 0")
+        return 0 #connection not valid
     #returns connection
     '''self.connections_dict[dburl]=connection #added connection to the dict
     print("This is new connection and added to dict")'''
@@ -88,20 +90,23 @@ class Login(tk.Tk):
                 else:
                     connection=vp.runcheckconnect(dburl)'''
                 self.pool=cp.poolcreate(dburl)  #---------------------->pool created
-                credcheck,i=0
+                #print("pool creation complete")
+                credcheck,i=0,0
                 while credcheck==0 and i<3:
+                    #print("in while")
                     connection=self.pool.get_connection()
+                    #print("fetching connection")
                     credcheck=connectionInstance(connection)
                     print(connection)
                     i+=1
                 if credcheck==1:
                     self.admincheck(username,password,connection)
-                    self.update_error_label("")
                 else:
                     self.update_error_label("No Internet/Error no connection pool")
                 #if fails then just need to try again??
             except Exception as e:
-                print(e," retrying to recover code needs here")
+                #print(e," retrying to recover--> code needs here")
+                self.update_error_label("Recheck Database URL/No Internet Connection")
                 '''try:
                     res=self.pool.recover_connection(connection) #try recover connection
                     if res==0: #could not recover
@@ -129,6 +134,7 @@ class Login(tk.Tk):
     def admincheck(self,username,password,connection):
         admin=cc.credchecker(username,password,connection) #returns admin value(int 0 or 1) or None 
         if admin is not None:
+            self.update_error_label("")
             if admin==1 or admin=='1':
                 self.admin=True  #user is an admin
             self.update_error_label("next window shows up")
