@@ -145,6 +145,11 @@ class Login(tk.Tk):
                 #further operations or re-entering the detials
                 #got connection now check for credentials
 
+    def openNextWindow(self):
+        if self.next_window is None or not self.next_window.winfo_exists():
+            #self.next_window=
+            print("Menu window here")
+
 
 
 if __name__ == "__main__":
