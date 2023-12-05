@@ -158,26 +158,26 @@ class login(ctk.CTk):
             
     def closeall(self):
         self.quit()
-    def open_next_window(self):
-        if self.next_window is None or not self.next_window.winfo_exists():
-            self.next_window=menu(self)
-            self.next_window.protocol("WM_DELETE_WINDOW", self.closeall)
-            self.withdraw()
-            self.next_window.deiconify()
- 
-class menu(window):
-    def __init__ (self,*args,**kwargs):
-        super().__init__(*args, **kwargs)
-        self.minsize(400,400)
-        self.title("Select and option")
-        
-        self.rowconfigure((0,1),weight=1)
-        self.columnconfigure((0,1),weight=1)
-        
-        width=400
-        height=400
-        screen_width = self.winfo_screenwidth()  # Width of the screen
-        screen_height = self.winfo_screenheight() # Height of the screen
+        def open_next_window(self):
+            if self.next_window is None or not self.next_window.winfo_exists():
+                self.next_window=menu(self)
+                self.next_window.protocol("WM_DELETE_WINDOW", self.closeall)
+                self.withdraw()
+                self.next_window.deiconify()
+    
+    class menu(window):
+        def __init__ (self,*args,**kwargs):
+            super().__init__(*args, **kwargs)
+            self.minsize(400,400)
+            self.title("Select and option")
+            
+            self.rowconfigure((0,1),weight=1)
+            self.columnconfigure((0,1),weight=1)
+            
+            width=400
+            height=400
+            screen_width = self.winfo_screenwidth()  # Width of the screen
+            screen_height = self.winfo_screenheight() # Height of the screen
  
         # Calculate Starting X and Y coordinates for Window
         x = (screen_width/2) - (width/2)

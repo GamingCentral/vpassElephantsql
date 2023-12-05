@@ -149,6 +149,10 @@ class Login(tk.Tk):
         if self.next_window is None or not self.next_window.winfo_exists():
             #self.next_window=
             print("Menu window here")
+            self.next_window=menu(self)
+            self.next_window.protocol("WM_DELETE_WINDOW", self.closeall)
+            self.withdraw()
+            self.next_window.deiconify()
 
 
 

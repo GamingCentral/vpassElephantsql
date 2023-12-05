@@ -1,7 +1,7 @@
 import tkinter as tk
 
-class Menu(tk.Tk):
-    def __init__ (self,admin,*args,**kwargs):
+class Menu(): #tk.Tk
+    def __init__ (self,window: tk.Tk,admin,*args,**kwargs):
         super().__init__(*args, **kwargs)
         self.minsize(400,400)
         self.title("Menu")
@@ -22,4 +22,18 @@ class Menu(tk.Tk):
 
         self.title_label = tk.Label(self, text="Select an Option", font=("courier new", 45, "bold"), fg="#426ae3", bg="#141414")
         self.title_label.pack(pady=20)
+
+
+        self.next_window=None
+
+    def geometry_centered(self, width, height):
+        screen_width = self.winfo_screenwidth()
+        screen_height = self.winfo_screenheight()
+        x = (screen_width / 2) - (width / 2)
+        y = (screen_height / 2) - (height / 2)
+        self.geometry('%dx%d+%d+%d' % (width, height, x, y))
          
+
+if __name__=="__main__":
+    m=Menu(1)
+    m.mainloop()
