@@ -65,6 +65,7 @@ class Login(tk.Tk):
         #self.error_label.grid(row=5, pady=(10, 10), column=0, columnspan=2)
 
         self.next_window = None
+    
 
     def geometry_centered(self, width, height):
         screen_width = self.winfo_screenwidth()
@@ -153,7 +154,7 @@ class Login(tk.Tk):
             self.next_window.protocol("WM_DELETE_WINDOW", self.closeall)
             self.withdraw()
             self.next_window.deiconify()
-
+    
 
 
 if __name__ == "__main__":
