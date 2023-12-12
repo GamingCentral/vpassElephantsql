@@ -24,13 +24,6 @@ class mainApp(tk.Tk): #the mainApp is a chlid class of tk.Tk window
         self.geometry(f"{window_width}x{window_height}+{x_coordinate}+{y_coordinate}")
         self.container.pack(fill="both",expand=True) #now pack the window first
 
-        self.loginFrame=Login(self.container, self.switchFrames,self.poolSave)
-        self.menuFrame=Menu(self.container, self.switchFrames)
-
-        self.frameDict["Login"]=self.loginFrame
-        self.frameDict["Menu"]=self.menuFrame
-
-
         self.databaseurl_label = tk.Label(self, text="Database URL", font=("bookman old style", 15),fg="gray", bg="#141414")
         self.databaseurl_label.pack()
         self.databaseurl_entry = tk.Entry(self, width=82, font=("Helvetica",11), bg="white", fg="#141414")
@@ -43,15 +36,25 @@ class mainApp(tk.Tk): #the mainApp is a chlid class of tk.Tk window
         self.error_label = tk.Label(self, text=None, font=("bookman old style", 12), fg="red",bg='#141414')
         self.error_label.pack()
 
-        self.show_frame("Login") 
+        #self.show_frame("Login") 
 
     def submit_press(self):
-        self.adderrorinfodburl= self.databaseurl_entry.get()
+        self.dburl= self.databaseurl_entry.get()
         if self.dburl=="":
             self.update_error_label("Enter the database url")
         else:
             try:
-                self.pool=cp.poolcreate(self.dburl)
+                self.pool=cp.poolcreate(self.dburl) #pool object
+                self.menuFrame=Menu(self.container, self.switchFrames, self.pool)
+                self.loginFrame=Login(self.container, self.switchFrames, self.pool, self.menuFrame)
+                self.frameDict["Login"]=self.loginFrame
+                self.frameDict["Menu"]=self.menuFrame
+                #pool should be active
+                self.connection = self.pool.get_connection()
+                if isinstance(self.connection) is not str:
+                    self.show_frame("Login")
+                else:
+                    self.update_error_label("Fetching connection failed recheck data base url")
             except Exception as e:
                 self.update_error_label(e)
 
@@ -83,9 +86,8 @@ class mainApp(tk.Tk): #the mainApp is a chlid class of tk.Tk window
             print("Close call was not success")
             self.destroy()
 
-    def poolSave(self, dburl,pool):
-        self.dburl=dburl
-        self.pool=pool
+    def menuFrameUpdater(self,admin):
+        self.menuFrame.update_admin_info(admin)
 
 
 if __name__=="__main__":

@@ -1,10 +1,6 @@
 import tkinter as tk
 import checkCreds as cc
-
-def connectionInstance(connection):
-    if isinstance(connection,str):
-        return 0
-    return 1
+import connectionpool as cp
 
 class Login(tk.Frame):
     def __init__(self,window,switch,pool):
@@ -39,31 +35,25 @@ class Login(tk.Frame):
             self.update_error_label("Please fill the fields to continue")
         else:
             try:
-                credcheck,i=0,0
-                while credcheck==0 and i<3:
-                    #print("in while")
-                    connection=self.pool.get_connection() #to get a connection
-                    #print("fetching connection")
-                    credcheck=connectionInstance(connection)
-                    print(connection)
-                    i+=1
-                if credcheck==1:
-                    self.admincheck(username,password,connection)
+                self.connection = self.pool.get_connection()
+                if isinstance(self.connection) is not str:
+                    self.admin = self.credentialCheck(username,password,self.connection) #send admin when calling menu
             except Exception as e:
-                self.update_error_label(e)
+                print(e)
     
     def update_error_label(self,message):
         self.error_label.config(text=message)
 
-    def admincheck(self,username,password,connection):
+    def credentialCheck(self,username,password,connection):
         admin=cc.credchecker(username,password,connection) #returns admin value(int 0 or 1) or None 
         if admin is not None:
             self.update_error_label("")
             if admin==1 or admin=='1':
                 self.admin=True  #user is an admin
             self.update_error_label("next window shows up") #next menu frame here
-            print(admin)
             self.pool.return_connection(connection) #should i return tho?
+            return admin
         else:
             self.update_error_label("Invalid Credentials--Please retry combination")
+            return None
 
