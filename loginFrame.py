@@ -2,12 +2,14 @@ import tkinter as tk
 import checkCreds as cc
 import connectionpool as cp
 
-class Login(tk.Frame):
-    def __init__(self,window,switch,pool):
-        super().__init__(window)
+class Login(tk.Tk):
+    def __init__(self,switch,pool,mfu):
+        super().__init__()
+        
         self.configure(bg='#141414')
         self.switchingFunction=switch
         self.pool=pool
+        self.menuFrameUpdater = mfu
 
         self.title_label = tk.Label(self, text="Login", font=("courier new", 45, "bold"), fg="#426ae3", bg="#141414")
         self.title_label.pack(pady=20)
@@ -25,6 +27,9 @@ class Login(tk.Frame):
         self.submit_button = tk.Button(self, width=20, command=self.submit_press, text="Submit",font=("courier new bold",15),bg="#426ae3",fg="black")
         self.submit_button.pack(pady=30)
 
+        self.back_button = tk.Button(self, text="Back", width=20, command=self.back_press, font=("courier new bold",15),bg="#426ae3",fg="black")
+        self.back_button.pack(pady=50)
+
         self.error_label = tk.Label(self, text=None, font=("bookman old style", 12), fg="red",bg='#141414')
         self.error_label.pack()
 
@@ -38,8 +43,14 @@ class Login(tk.Frame):
                 self.connection = self.pool.get_connection()
                 if isinstance(self.connection) is not str:
                     self.admin = self.credentialCheck(username,password,self.connection) #send admin when calling menu
+                    if callable(self.menuFrameUpdater):
+                        self.menuFrameUpdater(self.admin)
+
             except Exception as e:
                 print(e)
+        
+    def back_press(self):
+        self.switchingFunction("Main")
     
     def update_error_label(self,message):
         self.error_label.config(text=message)

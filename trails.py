@@ -1,67 +1,85 @@
 import tkinter as tk
-import checkCreds as cc
-import connectionpool as cp
+from tkinter import ttk
 
-class Login(tk.Frame):
-    def __init__(self,w,s,sbp):
-        super().__init__(w)
-        self.configure(bg='#141414')
-        self.switchingFunction=s
-        self.sendBackPool=sbp
+class MyApp:
+    def __init__(self, root):
+        self.root = root
+        self.root.title("Tkinter Application")
 
-        self.title_label = tk.Label(self, text="Login", font=("courier new", 45, "bold"), fg="#426ae3", bg="#141414")
-        self.title_label.pack(pady=20)
+        # Variables
+        self.db_url = tk.StringVar()
 
-        self.databaseurl_label = tk.Label(self, text="Database URL", font=("bookman old style", 15),fg="gray", bg="#141414")
-        self.databaseurl_label.pack()
-        self.databaseurl_entry = tk.Entry(self, width=82, font=("Helvetica",11), bg="white", fg="#141414")
-        self.databaseurl_entry.pack(pady=5)
+        # Frames
+        self.frame1 = ttk.Frame(root)
+        self.frame2 = ttk.Frame(root)
+        self.frame3 = ttk.Frame(root)
 
-        self.username_label = tk.Label(self, text="UserName", font=("bookman old style", 15),fg="gray", bg="#141414")
-        self.username_label.pack()
-        self.username_entry = tk.Entry(self, width=72,font=("gothic",13), bg="white", fg="#141414")
-        self.username_entry.pack(pady=5)
+        # Initialize frames
+        self.create_frame1()
+        self.create_frame2()
+        self.create_frame3()
 
-        self.password_label = tk.Label(self, text="Password", font=("bookman old style", 15),fg="gray", bg="#141414")
-        self.password_label.pack()
-        self.password_entry = tk.Entry(self, width=70,font=("Helvetica",12), show="•", bg="white", fg="#141414")
-        self.password_entry.pack(pady=5)
+        # Show frame1 initially
+        self.show_frame(self.frame1)
 
-        self.submit_button = tk.Button(self, width=20, command=self.submit_press, text="Submit",font=("courier new bold",15),bg="#426ae3",fg="black")
-        self.submit_button.pack(pady=30)
+    def create_frame1(self):
+        label = ttk.Label(self.frame1, text="Enter DB URL:")
+        entry = ttk.Entry(self.frame1, textvariable=self.db_url)
+        submit_button = ttk.Button(self.frame1, text="Submit", command=self.show_frame2)
 
-        self.error_label = tk.Label(self, text=None, font=("bookman old style", 12), fg="red",bg='#141414')
-        self.error_label.pack()
-    
-    def submit_press(self):
-        dburl = self.databaseurl_entry.get()
-        username = self.username_entry.get()
-        password = self.password_entry.get()
-        if dburl == "" or username=="" or password=="":
-            self.update_error_label("Please fill the fields to continue")
-        #if login successful then use the below else dont
+        label.pack(pady=10)
+        entry.pack(pady=10)
+        submit_button.pack(pady=10)
+
+    def create_frame2(self):
+        label = ttk.Label(self.frame2, text="Login Page")
+        submit_button = ttk.Button(self.frame2, text="Submit", command=self.show_frame3)
+        back_button = ttk.Button(self.frame2, text="Back", command=self.show_frame1)
+
+        label.pack(pady=10)
+        submit_button.pack(pady=10)
+        back_button.pack(pady=10)
+
+    def create_frame3(self):
+        notebook = ttk.Notebook(self.frame3)
+        
+        # Create pages in the notebook
+        page1 = ttk.Frame(notebook)
+        page2 = ttk.Frame(notebook)
+        page3 = ttk.Frame(notebook)
+        page4 = ttk.Frame(notebook)
+
+        # Add pages to the notebook
+        notebook.add(page1, text="1")
+        notebook.add(page2, text="2")
+        notebook.add(page3, text="3")
+        notebook.add(page4, text="4")
+
+        # Create back button
+        back_button = ttk.Button(self.frame3, text="Back", command=self.show_frame2)
+
+        notebook.pack(pady=10)
+        back_button.pack(pady=10)
+
+    def show_frame(self, frame):
+        self.frame1.pack_forget()
+        self.frame2.pack_forget()
+        self.frame3.pack_forget()
+        frame.pack(fill="both", expand=True)
+
+    def show_frame1(self):
+        self.show_frame(self.frame1)
+
+    def show_frame2(self):
+        if self.db_url.get():
+            self.show_frame(self.frame2)
         else:
-            try:
-                if self.pool is None:
-                    self.pool=cp.poolcreate(dburl)
-                    
-                else:
+            tk.messagebox.showwarning("Warning", "Please enter a DB URL first.")
 
-            except Exception as e:
-                self.update_error_label(e)
-        self.switchingFunction("Menu")
+    def show_frame3(self):
+        self.show_frame(self.frame3)
 
-    def admincheck(self,username,password,connection):
-        admin=cc.credchecker(username,password,connection) #returns admin value(int 0 or 1) or None 
-        if admin is not None:
-            self.update_error_label("")
-            if admin==1 or admin=='1':
-                self.admin=True  #user is an admin
-            self.update_error_label("next window shows up")
-            print(admin)
-            self.pool.return_connection(connection) #should i return tho?
-        else:
-            self.update_error_label("Invalid Credentials--Please retry combination")
-    
-    def update_error_label(self, message):
-        self.error_label.config(text=message)
+if __name__ == "__main__":
+    root = tk.Tk()
+    app = MyApp(root)
+    root.mainloop()
