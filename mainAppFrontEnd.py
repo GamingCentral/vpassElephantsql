@@ -2,7 +2,7 @@ import tkinter as tk
 from tkinter import ttk
 '''from loginFrame import Login
 from menuFrame import Men'''
-import connectionpool as cp
+#import connectionpool as cp
 
 class mainApp:
     def __init__(self,root):
@@ -32,9 +32,10 @@ class mainApp:
         self.dbFrame = ttk.Frame(root,style='TFrame')
         self.loginFrame = ttk.Frame(root,style='TFrame')
         self.MenuFrame = ttk.Frame(root,style='TFrame')
-        
-        self.dbFrameSwitch()
 
+        self.admin = 0 #default
+
+        self.showFrame(self.dbFrame)
 
     def dbFrameInitalizer(self):
 
@@ -44,7 +45,7 @@ class mainApp:
         self.databaseurl_entry.pack(pady=5)
 
         ##############################################################################
-        self.submit_button = tk.Button(self.dbFrame, width=20, command=self.submit_press_dburl, text="Submit", font=("courier new bold", 15), bg="#426ae3", fg="black")
+        self.submit_button = tk.Button(self.dbFrame, width=20, command=self.showLoginFrame, text="Submit", font=("courier new bold", 15), bg="#426ae3", fg="black")
         self.submit_button.pack(pady=45)
 
         self.error_label = tk.Label(self.dbFrame, text=None, font=("bookman old style", 12), fg="red", bg='#141414')
@@ -66,11 +67,11 @@ class mainApp:
         self.password_entry.pack(pady=5)
 
         ##########################################################################
-        self.submit_button = tk.Button(self.loginFrame, width=20, command=self.submit_press_login, text="Submit",font=("courier new bold",15),bg="#426ae3",fg="black")
+        self.submit_button = tk.Button(self.loginFrame, width=20, command=self.showMenuFrame, text="Submit",font=("courier new bold",15),bg="#426ae3",fg="black")
         self.submit_button.pack(pady=30)
 
         ##########################################################################
-        self.back_button = tk.Button(self.loginFrame, text="Back", width=20, command=self.back_press_login, font=("courier new bold",15),bg="#426ae3",fg="black")
+        self.back_button = tk.Button(self.loginFrame, text="Back", width=20, command=self.showdbFrame, font=("courier new bold",15),bg="#426ae3",fg="black")
         self.back_button.pack(pady=50)
 
         self.error_label = tk.Label(self.loginFrame, text=None, font=("bookman old style", 12), fg="red",bg='#141414')
@@ -78,64 +79,23 @@ class mainApp:
 
     def menuFrameInitializer(self,admin): #intialise after self.admin is fetched
 
-        notebook = ttk.Notebook(self.MenuFrame)
+        notebook = ttk.Notebook(self.mainFrame)
         
-        visitorEntry = ttk.Frame(notebook)
+        visitorEntry = ttk.Frame(notebook) #showdefault?
         visitorExit = ttk.Frame(notebook)
         signup = ttk.Frame(notebook)
 
         notebook.add(visitorEntry, text='Visitor Entry')
         notebook.add(visitorExit, text='visitor Exit')
 
-        if admin==1:
+        if self.admin is 1:
             notebook.add(signup, text='Sign Up/ Register')  
 
-        backButton = tk.Button(self.MenuFrame, text='Back', command=self.back_button_menu)
+        backButton = tk.Button(self.mainFrame, text='Back', command=self.showLoginFrame)
         notebook.pack(pady=10)
         backButton.pack(pady=10)
-    
-    def frameSwitch(self,frame:ttk.Frame):
-        try:
-            self.dbFrame.pack_forget()
-            self.loginFrame.pack_forget()
-            self.MenuFrame.pack_forget()
-        except Exception as e:
-            print(e)
-        finally:
-            frame.pack(fill="both",expand=True)
-            
 
-    def dbFrameSwitch(self):
-        self.frameSwitch(self.dbFrame)
 
-    def loginFrameSwitch(self):
-        self.frameSwitch(self.loginFrame)
-        
-    def menuFrameSwitch(self):
-        self.frameSwitch(self.MenuFrame)
-
-    def submit_press_dburl(self):
-        self.loginFrameInitializer()
-
-    def submit_press_login(self):
-        #first run code for credentials and update admin
-        admin=True
-        if admin is True:
-            self.menuFrameInitializer(1)
-        else:
-            self.menuFrameInitializer(0)
-
-    def back_press_login(self):
-        self.dbFrameSwitch()
-    
-    def back_button_menu(self):
-        self.loginFrameSwitch()
-        
-if __name__=='__main__':
-    root = tk.Tk()
-    appInstance=mainApp(root)
-    root.mainloop()
-  
 
 '''class mainApp(tk.Tk): #the mainApp is a chlid class of tk.Tk window
     def __init__(self):
