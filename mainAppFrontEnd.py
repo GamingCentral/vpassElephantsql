@@ -25,16 +25,16 @@ class mainApp:
 
         # Set the geometry of the window
         self.root.geometry(f"{window_width}x{window_height}+{x_coordinate}+{y_coordinate}")
-        self.root.pack(fill="both", expand=True)
+        #self.root.pack(fill="both", expand=True)
 
         self.root.title("Visitor Pass System")
-        self.dbUrl = tk.StringVar()
 
         self.dbFrame = ttk.Frame(root,style='TFrame')
         self.loginFrame = ttk.Frame(root,style='TFrame')
         self.MenuFrame = ttk.Frame(root,style='TFrame')
+        
+        self.dbFrameSwitch()
 
-        self.admin = 0 #default
 
     def dbFrameInitalizer(self):
 
@@ -76,7 +76,7 @@ class mainApp:
         self.error_label = tk.Label(self.loginFrame, text=None, font=("bookman old style", 12), fg="red",bg='#141414')
         self.error_label.pack()
 
-    def menuFrameInitializer(self): #intialise after self.admin is fetched
+    def menuFrameInitializer(self,admin): #intialise after self.admin is fetched
 
         notebook = ttk.Notebook(self.MenuFrame)
         
@@ -87,14 +87,55 @@ class mainApp:
         notebook.add(visitorEntry, text='Visitor Entry')
         notebook.add(visitorExit, text='visitor Exit')
 
-        if self.admin is 1:
+        if admin==1:
             notebook.add(signup, text='Sign Up/ Register')  
 
         backButton = tk.Button(self.MenuFrame, text='Back', command=self.back_button_menu)
         notebook.pack(pady=10)
         backButton.pack(pady=10)
+    
+    def frameSwitch(self,frame:ttk.Frame):
+        try:
+            self.dbFrame.pack_forget()
+            self.loginFrame.pack_forget()
+            self.MenuFrame.pack_forget()
+        except Exception as e:
+            print(e)
+        finally:
+            frame.pack(fill="both",expand=True)
+            
 
+    def dbFrameSwitch(self):
+        self.frameSwitch(self.dbFrame)
 
+    def loginFrameSwitch(self):
+        self.frameSwitch(self.loginFrame)
+        
+    def menuFrameSwitch(self):
+        self.frameSwitch(self.MenuFrame)
+
+    def submit_press_dburl(self):
+        self.loginFrameInitializer()
+
+    def submit_press_login(self):
+        #first run code for credentials and update admin
+        admin=True
+        if admin is True:
+            self.menuFrameInitializer(1)
+        else:
+            self.menuFrameInitializer(0)
+
+    def back_press_login(self):
+        self.dbFrameSwitch()
+    
+    def back_button_menu(self):
+        self.loginFrameSwitch()
+        
+if __name__=='__main__':
+    root = tk.Tk()
+    appInstance=mainApp(root)
+    root.mainloop()
+  
 
 '''class mainApp(tk.Tk): #the mainApp is a chlid class of tk.Tk window
     def __init__(self):
