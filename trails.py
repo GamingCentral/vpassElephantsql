@@ -2,7 +2,7 @@ import tkinter as tk
 from tkinter import ttk
 
 class MyApp:
-    def __init__(self, root):
+    def __init__(self, root:tk.Tk):
         self.root = root
         self.root.title("Tkinter Application")
 

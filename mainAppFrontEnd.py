@@ -8,10 +8,10 @@ from menuFrame import Men'''
 class mainApp:
     def __init__(self,root):
         self.root:tk.Tk=root
-        self.root.configure(bg='#141414')
+        self.root.configure(bg='#ebedf0')
 
         style = ttk.Style()
-        style.configure("TFrame", background='#141414')
+        style.configure("TFrame", background='#ebedf0')
 
         screen_width = self.root.winfo_screenwidth()
         screen_height = self.root.winfo_screenheight()
@@ -44,31 +44,31 @@ class mainApp:
 
     def dbFrameInitalizer(self):
 
-        self.databaseurl_label = tk.Label(self.dbFrame, text="Database URL", font=("bookman old style", 15), fg="gray", bg="#141414")
+        self.databaseurl_label = tk.Label(self.dbFrame, text="Database URL", font=("bookman old style", 15), fg="#0a0a0a", bg="#ebedf0")
         self.databaseurl_label.pack(pady=45)
-        self.databaseurl_entry = tk.Entry(self.dbFrame, width=82, font=("Helvetica", 11), bg="white", fg="#141414")
+        self.databaseurl_entry = tk.Entry(self.dbFrame, width=82, font=("Helvetica", 11), bg="white", fg="black")
         self.databaseurl_entry.pack(pady=5)
 
         ##############################################################################
         self.submit_button = tk.Button(self.dbFrame, width=20, command=self.submit_press_dburl, text="Submit", font=("courier new bold", 15), bg="#426ae3", fg="black")
         self.submit_button.pack(pady=45)
 
-        self.error_label_dburl = tk.Label(self.dbFrame, text='dburl', font=("bookman old style", 12), fg="red", bg='#141414')
+        self.error_label_dburl = tk.Label(self.dbFrame, text=None, font=("bookman old style", 12), fg="red", bg='#ebedf0')
         self.error_label_dburl.pack()
 
     def loginFrameInitializer(self):
 
-        self.title_label = tk.Label(self.loginFrame, text="Login", font=("courier new", 45, "bold"), fg="#426ae3", bg="#141414")
+        self.title_label = tk.Label(self.loginFrame, text="Login", font=("courier new", 45, "bold"), fg="#426ae3", bg="#ebedf0")
         self.title_label.pack(pady=20)
 
-        self.username_label = tk.Label(self.loginFrame, text="UserName", font=("bookman old style", 15),fg="gray", bg="#141414")
+        self.username_label = tk.Label(self.loginFrame, text="UserName", font=("bookman old style", 15),fg="#0a0a0a", bg="#ebedf0")
         self.username_label.pack()
-        self.username_entry = tk.Entry(self.loginFrame, width=72,font=("gothic",13), bg="white", fg="#141414")
+        self.username_entry = tk.Entry(self.loginFrame, width=72,font=("gothic",13), bg="white", fg="black")
         self.username_entry.pack(pady=5)
 
-        self.password_label = tk.Label(self.loginFrame, text="Password", font=("bookman old style", 15),fg="gray", bg="#141414")
+        self.password_label = tk.Label(self.loginFrame, text="Password", font=("bookman old style", 15),fg="#0a0a0a", bg="#ebedf0")
         self.password_label.pack()
-        self.password_entry = tk.Entry(self.loginFrame, width=72,font=("Helvetica",12), show="•", bg="white", fg="#141414")
+        self.password_entry = tk.Entry(self.loginFrame, width=72,font=("Helvetica",12), show="•", bg="white", fg="black")
         self.password_entry.pack(pady=5)
 
         ##########################################################################
@@ -79,21 +79,23 @@ class mainApp:
         self.back_button = tk.Button(self.loginFrame, text="Back", width=20, command=self.back_press_login, font=("courier new bold",15),bg="#426ae3",fg="black")
         self.back_button.pack(pady=50)
 
-        self.error_label_login = tk.Label(self.loginFrame, text=None, font=("bookman old style", 12), fg="red",bg='#141414')
+        self.error_label_login = tk.Label(self.loginFrame, text=None, font=("bookman old style", 12), fg="red",bg='#ebedf0')
         self.error_label_login.pack()
 
     def menuFrameInitializer(self): #intialise after self.admin is fetched
 
         self.notebook = ttk.Notebook(self.menuFrame,width=self.ww)
 
-        style = ttk.Style()
+        '''style = ttk.Style()
         style.configure('TNotebook.Tab', background="#426ae3")
-        style.map("TNotebook", background= [("selected", "#426ae3")])
+        style.map("TNotebook", background= [("selected", "#426ae3")])'''
         
         self.visitorEntry = ttk.Frame(self.notebook) #showdefault?
         self.addVisitorEntry()
         self.visitorExit = ttk.Frame(self.notebook)
-        self.signup = ttk.Frame(self.notebook) 
+        self.addVisitorExit()
+        self.signup = ttk.Frame(self.notebook)
+        self.addSignUp()
 
         self.notebook.add(self.visitorEntry, text='Visitor Entry')
         self.notebook.add(self.visitorExit, text='visitor Exit')  
@@ -103,49 +105,82 @@ class mainApp:
         backButton.pack(pady=10)
 
     def addVisitorEntry(self):
-        self.entry_label = tk.Label(self.visitorEntry, text="Visitor Entry", font=("courier new bold", 25), fg="#426ae3", bg="#141414")
+        self.entry_label = tk.Label(self.visitorEntry, text="Visitor Entry", font=("courier new bold", 25), fg="#426ae3", bg="#ebedf0")
         self.entry_label.pack(pady=15)
 
-        self.visitorNameLabel = tk.Label(self.visitorEntry, text="Name", font=("bookman old style", 10),fg="gray", bg="#141414")
+        self.visitorNameLabel = tk.Label(self.visitorEntry, text="Name", font=("bookman old style", 12),fg="#0a0a0a", bg="#ebedf0")
         self.visitorNameLabel.pack()
-        self.visitorNameEntry = tk.Entry(self.visitorEntry, width=72,font=("gothic",13), bg="white", fg="#141414")
-        self.visitorNameEntry.pack(pady=5)
+        self.visitorNameEntry = tk.Entry(self.visitorEntry, width=72,font=("gothic",13), bg="white", fg="black")
+        self.visitorNameEntry.pack(pady=3)
 
-        self.visitorNumberLabel = tk.Label(self.visitorEntry, text="Phone Number", font=("bookman old style", 10),fg="gray", bg="#141414")
+        self.visitorNumberLabel = tk.Label(self.visitorEntry, text="Phone Number", font=("bookman old style", 12),fg="#0a0a0a", bg="#ebedf0")
         self.visitorNumberLabel.pack()
-        self.visitorNumberEntry = tk.Entry(self.visitorEntry, width=72,font=("gothic",13), bg="white", fg="#141414")
-        self.visitorNumberEntry.pack(pady=5)
+        self.visitorNumberEntry = tk.Entry(self.visitorEntry, width=72,font=("gothic",13), bg="white", fg="black")
+        self.visitorNumberEntry.pack(pady=3)
 
-        self.visitorEmailLabel = tk.Label(self.visitorEntry, text="Email", font=("bookman old style", 10),fg="gray", bg="#141414")
+        self.visitorEmailLabel = tk.Label(self.visitorEntry, text="Email", font=("bookman old style", 12),fg="#0a0a0a", bg="#ebedf0")
         self.visitorEmailLabel.pack()
-        self.visitorEmailEntry = tk.Entry(self.visitorEntry, width=72,font=("gothic",13), bg="white", fg="#141414")
-        self.visitorEmailEntry.pack(pady=5)
+        self.visitorEmailEntry = tk.Entry(self.visitorEntry, width=72,font=("gothic",13), bg="white", fg="black")
+        self.visitorEmailEntry.pack(pady=3)
 
         # to be switched with a dropdown
-        self.visitorFacultyLabel = tk.Label(self.visitorEntry, text="Faculty Name", font=("bookman old style", 10),fg="gray", bg="#141414")
+        self.visitorFacultyLabel = tk.Label(self.visitorEntry, text="Faculty Name", font=("bookman old style", 12),fg="#0a0a0a", bg="#ebedf0")
         self.visitorFacultyLabel.pack()
         self.visitorFacultyButton = tk.Button(self.visitorEntry, text="🠟", font=25, width=10, bg='#426ae3',command=self.dropdown)
-        self.visitorFacultyButton.pack(pady=5)
+        self.visitorFacultyButton.pack(pady=3)
 
-        self.visitorReasonLabel = tk.Label(self.visitorEntry, text="Reason To Visit", font=("bookman old style", 10),fg="gray", bg="#141414")
+        self.visitorReasonLabel = tk.Label(self.visitorEntry, text="Reason To Visit", font=("bookman old style", 12),fg="#0a0a0a", bg="#ebedf0")
         self.visitorReasonLabel.pack()
-        self.visitorReasonEntry = tk.Entry(self.visitorEntry, width=72,font=("gothic",13), bg="white", fg="#141414")
-        self.visitorReasonEntry.pack(pady=5)
+        self.visitorReasonEntry = tk.Entry(self.visitorEntry, width=72,font=("gothic",13), bg="white", fg="black")
+        self.visitorReasonEntry.pack(pady=3)
 
-        self.visitorBarcodeLabel = tk.Label(self.visitorEntry, text="Barcode", font=("bookman old style", 10),fg="gray", bg="#141414")
+        self.visitorBarcodeLabel = tk.Label(self.visitorEntry, text="Barcode", font=("bookman old style", 12),fg="#0a0a0a", bg="#ebedf0")
         self.visitorBarcodeLabel.pack()
-        self.visitorBarcodeEntry = tk.Entry(self.visitorEntry, width=72,font=("gothic",13), bg="white", fg="#141414")
-        self.visitorBarcodeEntry.pack(pady=5)
+        self.visitorBarcodeEntry = tk.Entry(self.visitorEntry, width=72,font=("gothic",13), bg="white", fg="black")
+        self.visitorBarcodeEntry.pack(pady=3)
 
         self.submit_button = tk.Button(self.visitorEntry, width=40, command=self.submit_press_visitorEntry, text="Submit", font=("courier new bold", 15), bg="#426ae3", fg="black")
         self.submit_button.pack(pady=15)
 
-        self.error_label_visitorEntry = tk.Label(self.visitorEntry, text='this is error', font=("bookman old style", 15), fg="red", bg='#141414')
+        self.error_label_visitorEntry = tk.Label(self.visitorEntry, text='this is error', font=("bookman old style", 15), fg="red", bg='#ebedf0')
         self.error_label_visitorEntry.pack()
     
-    def addVisitorExit():
-        print("code for exit")
+    def addVisitorExit(self):
+        self.exit_label = tk.Label(self.visitorExit, text="Visitor Exit", font=("courier new bold", 35), fg="#426ae3", bg="#ebedf0")
+        self.exit_label.pack(pady=35)
+
+        self.barcodeExit = tk.Label(self.visitorExit, text="Name", font=("bookman old style", 15),fg="#0a0a0a", bg="#ebedf0")
+        self.barcodeExit.pack()
+        self.visitorBarcodeExit = tk.Entry(self.visitorExit, width=72,font=("gothic",13), bg="white", fg="black")
+        self.visitorBarcodeExit.pack(pady=10)
+
+        self.submit_button = tk.Button(self.visitorExit, width=30, command=self.submit_press_visitorExit, text="Submit", font=("courier new bold", 15), bg="#426ae3", fg="black")
+        self.submit_button.pack(pady=35)
+
+        self.error_label_visitorEntry = tk.Label(self.visitorExit, text='this is error', font=("bookman old style", 15), fg="red", bg='#ebedf0')
+        self.error_label_visitorEntry.pack(pady=15)
     
+    def addSignUp(self):
+        self.exit_label = tk.Label(self.signup, text="Register User", font=("courier new bold", 35), fg="#426ae3", bg="#ebedf0")
+        self.exit_label.pack(pady=35)
+
+        self.username_label_signup = tk.Label(self.signup, text="UserName", font=("bookman old style", 15),fg="#0a0a0a", bg="#ebedf0")
+        self.username_label_signup.pack()
+        self.username_entry_singup = tk.Entry(self.signup, width=72,font=("gothic",13), bg="white", fg="black")
+        self.username_entry_singup.pack(pady=5)
+
+        self.password_label_signup = tk.Label(self.signup, text="Password", font=("bookman old style", 15),fg="#0a0a0a", bg="#ebedf0")
+        self.password_label_signup.pack()
+        self.password_entry_singup = tk.Entry(self.signup, width=72,font=("Helvetica",12), bg="white", fg="black")
+        self.password_entry_singup.pack(pady=5)
+
+        ##########################################################################
+        self.submit_button = tk.Button(self.signup, width=20, command=self.submit_press_signup, text="Submit",font=("courier new bold",15),bg="#426ae3",fg="black")
+        self.submit_button.pack(pady=30)
+
+        self.error_label_signup = tk.Label(self.loginFrame, text=None, font=("bookman old style", 12), fg="red",bg='#ebedf0')
+        self.error_label_signup.pack()
+
     def menuFrameUpdater(self):
         self.notebook.add(self.signup, text='Sign Up/ Register')
 
@@ -203,7 +238,13 @@ class mainApp:
     def submit_press_visitorEntry(self):
         print('visitor entry data')
 
-    def on_closing(self,root:tk.Tk):
+    def submit_press_visitorExit(self):
+        print('submit function here')
+
+    def submit_press_signup(self):
+        print('to signup')
+
+    def on_closing(self):
         try:
             if self.pool is not None:
                 self.pool.close_pool()
@@ -212,8 +253,6 @@ class mainApp:
                 print("No Connections were taken")
         except Exception as e:
             print(e)
-        finally:
-            root.destroy()
 
 
 if __name__=='__main__':
@@ -221,7 +260,7 @@ if __name__=='__main__':
     appInstance=mainApp(root)
     root.mainloop()
     try:
-        root.protocol("WM_DELETE_WINDOW",appInstance.on_closing(root))
+        root.protocol("WM_DELETE_WINDOW",appInstance.on_closing())
     except Exception as e:
         print(e)
         pass
@@ -231,7 +270,7 @@ if __name__=='__main__':
     def __init__(self):
         super().__init__()
         self.frameDict = {}
-        self.configure(bg='#141414')
+        self.configure(bg='#fcfdff')
 
         screen_width = self.winfo_screenwidth()
         screen_height = self.winfo_screenheight()
@@ -247,18 +286,18 @@ if __name__=='__main__':
         # Set the geometry of the window
         self.geometry(f"{window_width}x{window_height}+{x_coordinate}+{y_coordinate}")
 
-        self.container = tk.Frame(self, bg='#141414')
+        self.container = tk.Frame(self, bg='#fcfdff')
         self.container.pack(fill="both", expand=True)
 
-        self.databaseurl_label = tk.Label(self.container, text="Database URL", font=("bookman old style", 15), fg="gray", bg="#141414")
+        self.databaseurl_label = tk.Label(self.container, text="Database URL", font=("bookman old style", 15), fg="#0a0a0a", bg="#ebedf0")
         self.databaseurl_label.pack(pady=45)
-        self.databaseurl_entry = tk.Entry(self.container, width=82, font=("Helvetica", 11), bg="white", fg="#141414")
+        self.databaseurl_entry = tk.Entry(self.container, width=82, font=("Helvetica", 11), bg="white", fg="black")
         self.databaseurl_entry.pack(pady=5)
 
         self.submit_button = tk.Button(self.container, width=20, command=self.submit_press, text="Submit", font=("courier new bold", 15), bg="#426ae3", fg="black")
         self.submit_button.pack(pady=45)
 
-        self.error_label = tk.Label(self.container, text=None, font=("bookman old style", 12), fg="red", bg='#141414')
+        self.error_label = tk.Label(self.container, text=None, font=("bookman old style", 12), fg="red", bg='#fcfdff')
         self.error_label.pack()
 
     def submit_press(self):
