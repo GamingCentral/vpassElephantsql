@@ -16,12 +16,13 @@ class mainApp:
         screen_height = self.root.winfo_screenheight()
 
         # Set the width and height of the window based on a fraction of the screen size
-        window_width = int(screen_width * 0.6)
-        window_height = int(screen_height * 0.6)
+        window_width = int(screen_width * 0.8)
+        window_height = int(screen_height * 0.8)
+        self.ww = window_width
 
         # Calculate the x and y coordinates to center the window
         x_coordinate = (screen_width - window_width) // 2
-        y_coordinate = (screen_height - window_height) // 2
+        y_coordinate = (screen_height - window_height) // 3
 
         # Set the geometry of the window
         self.root.geometry(f"{window_width}x{window_height}+{x_coordinate}+{y_coordinate}")
@@ -66,7 +67,7 @@ class mainApp:
 
         self.password_label = tk.Label(self.loginFrame, text="Password", font=("bookman old style", 15),fg="gray", bg="#141414")
         self.password_label.pack()
-        self.password_entry = tk.Entry(self.loginFrame, width=70,font=("Helvetica",12), show="•", bg="white", fg="#141414")
+        self.password_entry = tk.Entry(self.loginFrame, width=72,font=("Helvetica",12), show="•", bg="white", fg="#141414")
         self.password_entry.pack(pady=5)
 
         ##########################################################################
@@ -82,9 +83,14 @@ class mainApp:
 
     def menuFrameInitializer(self): #intialise after self.admin is fetched
 
-        self.notebook = ttk.Notebook(self.menuFrame)
+        self.notebook = ttk.Notebook(self.menuFrame,width=self.ww)
+
+        style = ttk.Style()
+        style.configure('TNotebook.Tab', background="#426ae3")
+        style.map("TNotebook", background= [("selected", "#426ae3")])
         
         self.visitorEntry = ttk.Frame(self.notebook) #showdefault?
+        self.addVisitorEntry()
         self.visitorExit = ttk.Frame(self.notebook)
         self.signup = ttk.Frame(self.notebook)
 
@@ -94,9 +100,53 @@ class mainApp:
         backButton = tk.Button(self.menuFrame, text='Back', command=self.back_button_menu, font=("courier new bold",15),bg="#426ae3",fg="black")
         self.notebook.pack(pady=10)
         backButton.pack(pady=10)
+
+    def addVisitorEntry(self):
+        self.entry_label = tk.Label(self.visitorEntry, text="Visitor Entry", font=("courier new bold", 25), fg="#426ae3", bg="#141414")
+        self.entry_label.pack(pady=15)
+
+        self.visitorNameLabel = tk.Label(self.visitorEntry, text="Name", font=("bookman old style", 10),fg="gray", bg="#141414")
+        self.visitorNameLabel.pack()
+        self.visitorNameEntry = tk.Entry(self.visitorEntry, width=72,font=("gothic",13), bg="white", fg="#141414")
+        self.visitorNameEntry.pack(pady=5)
+
+        self.visitorNumberLabel = tk.Label(self.visitorEntry, text="Phone Number", font=("bookman old style", 10),fg="gray", bg="#141414")
+        self.visitorNumberLabel.pack()
+        self.visitorNumberEntry = tk.Entry(self.visitorEntry, width=72,font=("gothic",13), bg="white", fg="#141414")
+        self.visitorNumberEntry.pack(pady=5)
+
+        self.visitorEmailLabel = tk.Label(self.visitorEntry, text="Email", font=("bookman old style", 10),fg="gray", bg="#141414")
+        self.visitorEmailLabel.pack()
+        self.visitorEmailEntry = tk.Entry(self.visitorEntry, width=72,font=("gothic",13), bg="white", fg="#141414")
+        self.visitorEmailEntry.pack(pady=5)
+
+        # to be switched with a dropdown
+        self.visitorFacultyLabel = tk.Label(self.visitorEntry, text="Faculty Name", font=("bookman old style", 10),fg="gray", bg="#141414")
+        self.visitorFacultyLabel.pack()
+        self.visitorFacultyButton = tk.Button(self.visitorEntry, text="🠟", font=25, width=10, bg='#426ae3',command=self.dropdown)
+        self.visitorFacultyButton.pack(pady=5)
+
+        self.visitorReasonLabel = tk.Label(self.visitorEntry, text="Reason To Visit", font=("bookman old style", 10),fg="gray", bg="#141414")
+        self.visitorReasonLabel.pack()
+        self.visitorReasonEntry = tk.Entry(self.visitorEntry, width=72,font=("gothic",13), bg="white", fg="#141414")
+        self.visitorReasonEntry.pack(pady=5)
+
+        self.visitorBarcodeLabel = tk.Label(self.visitorEntry, text="Barcode", font=("bookman old style", 10),fg="gray", bg="#141414")
+        self.visitorBarcodeLabel.pack()
+        self.visitorBarcodeEntry = tk.Entry(self.visitorEntry, width=72,font=("gothic",13), bg="white", fg="#141414")
+        self.visitorBarcodeEntry.pack(pady=5)
+
+        self.submit_button = tk.Button(self.visitorEntry, width=40, command=self.submit_press_dburl, text="Submit", font=("courier new bold", 15), bg="#426ae3", fg="black")
+        self.submit_button.pack(pady=15)
+
+        self.error_label = tk.Label(self.visitorEntry, text='this is error', font=("bookman old style", 15), fg="red", bg='#141414')
+        self.error_label.pack()
     
-    def menuFrameUpdater(self,notebookWidget:ttk.Frame,notebook:ttk.Notebook):
-            notebook.add(notebookWidget, text='Sign Up/ Register')
+    def addVisitorExit():
+        print("code for exit")
+    
+    def menuFrameUpdater(self):
+        self.notebook.add(self.signup, text='Sign Up/ Register')
 
     def frameSwitch(self,frame:ttk.Frame):
         try:
@@ -122,9 +172,9 @@ class mainApp:
 
     def submit_press_login(self):
         #first run code for credentials and update admin
-        admin=False
+        admin=True
         if admin:
-            self.menuFrameUpdater(self.signup, self.notebook)
+            self.menuFrameUpdater()
         self.menuFrameSwitch()
 
     def back_press_login(self):
@@ -132,6 +182,9 @@ class mainApp:
 
     def back_button_menu(self):
         self.loginFrameSwitch()
+
+    def dropdown(self):
+        print('dropdown here')
 
 if __name__=='__main__':
     root = tk.Tk()
