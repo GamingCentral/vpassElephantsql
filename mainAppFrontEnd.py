@@ -1,5 +1,6 @@
 import tkinter as tk
 from tkinter import ttk
+import mainAppBackend as backend
 '''from loginFrame import Login
 from menuFrame import Men'''
 #import connectionpool as cp
@@ -33,7 +34,7 @@ class mainApp:
         self.dbFrame = ttk.Frame(root,style='TFrame')
         self.loginFrame = ttk.Frame(root,style='TFrame')
         self.menuFrame = ttk.Frame(root,style='TFrame')
-
+        self.pool = None
         #self.admin = 0 #default
         self.dbFrameInitalizer()
         self.loginFrameInitializer()
@@ -52,8 +53,8 @@ class mainApp:
         self.submit_button = tk.Button(self.dbFrame, width=20, command=self.submit_press_dburl, text="Submit", font=("courier new bold", 15), bg="#426ae3", fg="black")
         self.submit_button.pack(pady=45)
 
-        self.error_label = tk.Label(self.dbFrame, text=None, font=("bookman old style", 12), fg="red", bg='#141414')
-        self.error_label.pack()
+        self.error_label_dburl = tk.Label(self.dbFrame, text='dburl', font=("bookman old style", 12), fg="red", bg='#141414')
+        self.error_label_dburl.pack()
 
     def loginFrameInitializer(self):
 
@@ -78,8 +79,8 @@ class mainApp:
         self.back_button = tk.Button(self.loginFrame, text="Back", width=20, command=self.back_press_login, font=("courier new bold",15),bg="#426ae3",fg="black")
         self.back_button.pack(pady=50)
 
-        self.error_label = tk.Label(self.loginFrame, text=None, font=("bookman old style", 12), fg="red",bg='#141414')
-        self.error_label.pack()
+        self.error_label_login = tk.Label(self.loginFrame, text=None, font=("bookman old style", 12), fg="red",bg='#141414')
+        self.error_label_login.pack()
 
     def menuFrameInitializer(self): #intialise after self.admin is fetched
 
@@ -92,7 +93,7 @@ class mainApp:
         self.visitorEntry = ttk.Frame(self.notebook) #showdefault?
         self.addVisitorEntry()
         self.visitorExit = ttk.Frame(self.notebook)
-        self.signup = ttk.Frame(self.notebook)
+        self.signup = ttk.Frame(self.notebook) 
 
         self.notebook.add(self.visitorEntry, text='Visitor Entry')
         self.notebook.add(self.visitorExit, text='visitor Exit')  
@@ -136,17 +137,20 @@ class mainApp:
         self.visitorBarcodeEntry = tk.Entry(self.visitorEntry, width=72,font=("gothic",13), bg="white", fg="#141414")
         self.visitorBarcodeEntry.pack(pady=5)
 
-        self.submit_button = tk.Button(self.visitorEntry, width=40, command=self.submit_press_dburl, text="Submit", font=("courier new bold", 15), bg="#426ae3", fg="black")
+        self.submit_button = tk.Button(self.visitorEntry, width=40, command=self.submit_press_visitorEntry, text="Submit", font=("courier new bold", 15), bg="#426ae3", fg="black")
         self.submit_button.pack(pady=15)
 
-        self.error_label = tk.Label(self.visitorEntry, text='this is error', font=("bookman old style", 15), fg="red", bg='#141414')
-        self.error_label.pack()
+        self.error_label_visitorEntry = tk.Label(self.visitorEntry, text='this is error', font=("bookman old style", 15), fg="red", bg='#141414')
+        self.error_label_visitorEntry.pack()
     
     def addVisitorExit():
         print("code for exit")
     
     def menuFrameUpdater(self):
         self.notebook.add(self.signup, text='Sign Up/ Register')
+
+    def update_error_label_dburl(self,message):
+        self.error_label_dburl.config(text=message)
 
     def frameSwitch(self,frame:ttk.Frame):
         try:
@@ -168,7 +172,17 @@ class mainApp:
         self.frameSwitch(self.menuFrame)
 
     def submit_press_dburl(self):
-        self.loginFrameSwitch()
+        databaseURL = self.databaseurl_entry.get()
+        if databaseURL=='':
+            self.update_error_label_dburl("Please enter the database url")
+        else:
+            object = backend.dbUrlFunctions(databaseURL)
+            poolObject = object.fetchPoolObject()
+            if not isinstance(poolObject,int):
+                self.loginFrameSwitch()
+                self.pool=poolObject
+            else:
+                self.update_error_label_dburl("Database URL was not valid or\nCheck Internet Connection")
 
     def submit_press_login(self):
         #first run code for credentials and update admin
@@ -186,10 +200,31 @@ class mainApp:
     def dropdown(self):
         print('dropdown here')
 
+    def submit_press_visitorEntry(self):
+        print('visitor entry data')
+
+    def on_closing(self,root:tk.Tk):
+        try:
+            if self.pool is not None:
+                self.pool.close_pool()
+                print("All Connections are Closed")
+            else:
+                print("No Connections were taken")
+        except Exception as e:
+            print(e)
+        finally:
+            root.destroy()
+
+
 if __name__=='__main__':
     root = tk.Tk()
     appInstance=mainApp(root)
     root.mainloop()
+    try:
+        root.protocol("WM_DELETE_WINDOW",appInstance.on_closing(root))
+    except Exception as e:
+        print(e)
+        pass
 
 
 '''class mainApp(tk.Tk): #the mainApp is a chlid class of tk.Tk window
