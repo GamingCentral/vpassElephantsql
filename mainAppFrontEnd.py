@@ -12,6 +12,8 @@ class mainApp:
 
         style = ttk.Style()
         style.configure("TFrame", background='#ebedf0')
+        style.configure("TNotebook.Tab", background="#426ae3")
+        style.map("TNotebook", background= [("selected", "#426ae3")])
 
         screen_width = self.root.winfo_screenwidth()
         screen_height = self.root.winfo_screenheight()
@@ -85,10 +87,6 @@ class mainApp:
     def menuFrameInitializer(self): #intialise after self.admin is fetched
 
         self.notebook = ttk.Notebook(self.menuFrame,width=self.ww)
-
-        '''style = ttk.Style()
-        style.configure('TNotebook.Tab', background="#426ae3")
-        style.map("TNotebook", background= [("selected", "#426ae3")])'''
         
         self.visitorEntry = ttk.Frame(self.notebook) #showdefault?
         self.addVisitorEntry()
@@ -96,6 +94,10 @@ class mainApp:
         self.addVisitorExit()
         self.signup = ttk.Frame(self.notebook)
         self.addSignUp()
+        self.facultyRegistration = ttk.Frame(self.notebook)
+        self.addFacultyRegistration()
+        self.qrRegistration = ttk.Frame(self.notebook)
+        self.addqrRegistration()
 
         self.notebook.add(self.visitorEntry, text='Visitor Entry')
         self.notebook.add(self.visitorExit, text='visitor Exit')  
@@ -134,7 +136,7 @@ class mainApp:
         self.visitorReasonEntry = tk.Entry(self.visitorEntry, width=72,font=("gothic",13), bg="white", fg="black")
         self.visitorReasonEntry.pack(pady=3)
 
-        self.visitorBarcodeLabel = tk.Label(self.visitorEntry, text="Barcode", font=("bookman old style", 12),fg="#0a0a0a", bg="#ebedf0")
+        self.visitorBarcodeLabel = tk.Label(self.visitorEntry, text="Scan Barcode Here", font=("bookman old style", 12),fg="#0a0a0a", bg="#ebedf0")
         self.visitorBarcodeLabel.pack()
         self.visitorBarcodeEntry = tk.Entry(self.visitorEntry, width=72,font=("gothic",13), bg="white", fg="black")
         self.visitorBarcodeEntry.pack(pady=3)
@@ -178,11 +180,58 @@ class mainApp:
         self.submit_button = tk.Button(self.signup, width=20, command=self.submit_press_signup, text="Submit",font=("courier new bold",15),bg="#426ae3",fg="black")
         self.submit_button.pack(pady=30)
 
-        self.error_label_signup = tk.Label(self.loginFrame, text=None, font=("bookman old style", 12), fg="red",bg='#ebedf0')
+        self.error_label_signup = tk.Label(self.signup, text='this is error', font=("bookman old style", 12), fg="red",bg='#ebedf0')
         self.error_label_signup.pack()
+
+    def addFacultyRegistration(self):
+        self.faculty_label = tk.Label(self.facultyRegistration, text="Faculty Registration", font=("courier new bold", 25), fg="#426ae3", bg="#ebedf0")
+        self.faculty_label.pack(pady=15)
+
+        self.facultyNameLabel = tk.Label(self.facultyRegistration, text="Name", font=("bookman old style", 12),fg="#0a0a0a", bg="#ebedf0")
+        self.facultyNameLabel.pack()
+        self.facultyNameEntry = tk.Entry(self.facultyRegistration, width=72,font=("gothic",13), bg="white", fg="black")
+        self.facultyNameEntry.pack(pady=3)
+
+        self.facultyNumberLabel = tk.Label(self.facultyRegistration, text="Phone Number", font=("bookman old style", 12),fg="#0a0a0a", bg="#ebedf0")
+        self.facultyNumberLabel.pack()
+        self.facultyNumberEntry = tk.Entry(self.facultyRegistration, width=72,font=("gothic",13), bg="white", fg="black")
+        self.facultyNumberEntry.pack(pady=3)
+
+        self.facultyEmailLabel = tk.Label(self.facultyRegistration, text="Email", font=("bookman old style", 12),fg="#0a0a0a", bg="#ebedf0")
+        self.facultyEmailLabel.pack()
+        self.facultyEmailEntry = tk.Entry(self.facultyRegistration, width=72,font=("gothic",13), bg="white", fg="black")
+        self.facultyEmailEntry.pack(pady=3)
+
+        self.facultyDeptLabel = tk.Label(self.facultyRegistration, text="Department", font=("bookman old style", 12),fg="#0a0a0a", bg="#ebedf0")
+        self.facultyDeptLabel.pack()
+        self.facultyDeptEntry = tk.Entry(self.facultyRegistration, width=72,font=("gothic",13), bg="white", fg="black")
+        self.facultyDeptEntry.pack(pady=3)
+
+        self.submit_button = tk.Button(self.facultyRegistration, width=40, command=self.submit_press_facultyRegister, text="Submit", font=("courier new bold", 15), bg="#426ae3", fg="black")
+        self.submit_button.pack(pady=15)
+
+        self.error_label_faculty = tk.Label(self.facultyRegistration, text='this is error', font=("bookman old style", 15), fg="red", bg='#ebedf0')
+        self.error_label_faculty.pack()
+
+    def addqrRegistration(self):
+        self.qr_label = tk.Label(self.qrRegistration, text="Barcode Registration", font=("courier new bold", 35), fg="#426ae3", bg="#ebedf0")
+        self.qr_label.pack(pady=35)
+
+        self.barcodeNew = tk.Label(self.qrRegistration, text="Scan Barcode Here", font=("bookman old style", 15),fg="#0a0a0a", bg="#ebedf0")
+        self.barcodeNew.pack()
+        self.barcodeNewEntry = tk.Entry(self.qrRegistration, width=72,font=("gothic",13), bg="white", fg="black")
+        self.barcodeNewEntry.pack(pady=10)
+
+        self.submit_button = tk.Button(self.qrRegistration, width=30, command=self.submit_press_qrRegister, text="Submit", font=("courier new bold", 15), bg="#426ae3", fg="black")
+        self.submit_button.pack(pady=35)
+
+        self.error_label_qr = tk.Label(self.qrRegistration, text='this is error', font=("bookman old style", 15), fg="red", bg='#ebedf0')
+        self.error_label_qr.pack(pady=15) 
 
     def menuFrameUpdater(self):
         self.notebook.add(self.signup, text='Sign Up/ Register')
+        self.notebook.add(self.facultyRegistration, text='Faculty Registration')
+        self.notebook.add(self.qrRegistration, text='QR Registration')
 
     def update_error_label_dburl(self,message):
         self.error_label_dburl.config(text=message)
@@ -207,6 +256,7 @@ class mainApp:
         self.frameSwitch(self.menuFrame)
 
     def submit_press_dburl(self):
+        self.loginFrameSwitch() #remove later ###################################################
         databaseURL = self.databaseurl_entry.get()
         if databaseURL=='':
             self.update_error_label_dburl("Please enter the database url")
@@ -221,7 +271,7 @@ class mainApp:
 
     def submit_press_login(self):
         #first run code for credentials and update admin
-        admin=True
+        admin=False
         if admin:
             self.menuFrameUpdater()
         self.menuFrameSwitch()
@@ -244,6 +294,12 @@ class mainApp:
     def submit_press_signup(self):
         print('to signup')
 
+    def submit_press_facultyRegister(self):
+        print('to faculty register')
+
+    def submit_press_qrRegister(self):
+        print('to qr register')
+
     def on_closing(self):
         try:
             if self.pool is not None:
@@ -264,99 +320,3 @@ if __name__=='__main__':
     except Exception as e:
         print(e)
         pass
-
-
-'''class mainApp(tk.Tk): #the mainApp is a chlid class of tk.Tk window
-    def __init__(self):
-        super().__init__()
-        self.frameDict = {}
-        self.configure(bg='#fcfdff')
-
-        screen_width = self.winfo_screenwidth()
-        screen_height = self.winfo_screenheight()
-
-        # Set the width and height of the window based on a fraction of the screen size
-        window_width = int(screen_width * 0.6)
-        window_height = int(screen_height * 0.6)
-
-        # Calculate the x and y coordinates to center the window
-        x_coordinate = (screen_width - window_width) // 2
-        y_coordinate = (screen_height - window_height) // 2
-
-        # Set the geometry of the window
-        self.geometry(f"{window_width}x{window_height}+{x_coordinate}+{y_coordinate}")
-
-        self.container = tk.Frame(self, bg='#fcfdff')
-        self.container.pack(fill="both", expand=True)
-
-        self.databaseurl_label = tk.Label(self.container, text="Database URL", font=("bookman old style", 15), fg="#0a0a0a", bg="#ebedf0")
-        self.databaseurl_label.pack(pady=45)
-        self.databaseurl_entry = tk.Entry(self.container, width=82, font=("Helvetica", 11), bg="white", fg="black")
-        self.databaseurl_entry.pack(pady=5)
-
-        self.submit_button = tk.Button(self.container, width=20, command=self.submit_press, text="Submit", font=("courier new bold", 15), bg="#426ae3", fg="black")
-        self.submit_button.pack(pady=45)
-
-        self.error_label = tk.Label(self.container, text=None, font=("bookman old style", 12), fg="red", bg='#fcfdff')
-        self.error_label.pack()
-
-    def submit_press(self):
-        self.dburl= self.databaseurl_entry.get()
-        if self.dburl=="":
-            self.update_error_label("Enter the database url")
-        else:
-            try:
-                self.pool=cp.poolcreate(self.dburl) #pool object
-                self.menuFrame=Menu(self.switchFrames, self.pool)
-                self.loginFrame=Login(self.switchFrames, self.pool, self.menuFrameUpdater)
-                self.frameDict["Login"]=self.loginFrame
-                self.frameDict["Menu"]=self.menuFrame
-                self.frameDict["Main"]=self.container
-                #pool should be active
-                self.connection = self.pool.get_connection()
-                if not isinstance(self.connection,str):
-                    self.frameDict["Main"].pack_forget()
-                    self.show_frame("Login")
-                else:
-                    self.update_error_label("Fetching connection failed recheck data base url")
-            except Exception as e:
-                self.update_error_label(e)
-                print(e)
-
-    def switchFrames(self, frameName):
-        for frame_key in self.frameDict:
-            self.frameDict[frame_key].pack_forget()
-
-        # Show the selected frame
-        selected_frame = self.frameDict[frameName]
-        selected_frame.pack(fill="both", expand=True)
-
-        # Update the window title
-        self.title(frameName)
-
-    def show_frame(self,frameName):
-        self.frameNeeded=self.frameDict[frameName]
-        self.frameNeeded.pack(fill="both", expand=True)
-        self.title(frameName)
-
-    def update_error_label(self,message):
-        self.error_label.config(text=message)
-
-    def on_closing(self):
-        try:
-            self.pool.close_pool()  
-            print("all connections are closed")
-            self.destroy()
-        except Exception as e:
-            print("Close call was not success")
-            self.destroy()
-
-    def menuFrameUpdater(self,admin):
-        self.menuFrame.update_admin_info(admin)
-
-
-if __name__=="__main__":
-    app=mainApp()
-    app.protocol("WM_DELETE_WINDOW",app.on_closing)
-    app.mainloop()
-'''

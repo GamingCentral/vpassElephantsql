@@ -60,15 +60,18 @@ class createtables(tk.Tk):
                             self.update_error_label("Unable to get connection / No Internet Connection")
                     except Exception as e:
                         print(e)
+                        self.pool.close_pool()
+                        print('connections closed')
             except Exception as e:
                 print(e)
 
     def tablecreate(self,connection):
         create_qravailable_query="CREATE TABLE IF NOT EXISTS QRavailable (qrid VARCHAR(50) PRIMARY KEY,availability integer default 1 not null)"
-        create_records_query = "CREATE TABLE IF NOT EXISTS Records (vid INT PRIMARY KEY,qrid VARCHAR(50),name VARCHAR(25),phno BIGINT,email VARCHAR(40),reasonofvisit VARCHAR(75),ptm VARCHAR(25),IT varchar(20),OT varchar(20) default NULL,foreign key(qrid) references qravailable(qrid))"
-        create_invisitors_query = "CREATE TABLE IF NOT EXISTS InVisitors (slno int primary key,vid INT,qrid VARCHAR(50),name VARCHAR(25),phno BIGINT,email VARCHAR(40),reasonofvisit VARCHAR(75),ptm VARCHAR(25),IT varchar(20),foreign key(vid) references Records(vid))"
-        create_faculty_query = "CREATE TABLE IF NOT EXISTS faculty (name VARCHAR(25) PRIMARY KEY,email varchar(40) not null, department varchar(10) not null, contact bigint)"
-        create_table_creds= "CREATE TABLE IF NOT EXISTS creds (username varchar(30) primary key, password varchar(30) not null, Admin Integer not null default 0)"
+        create_records_query = "CREATE TABLE IF NOT EXISTS Records (vid INT PRIMARY KEY,qrid VARCHAR(50),Name VARCHAR(25),PhoneNumber varchar(20),Email VARCHAR(40),PersonToVisit VARCHAR(25), ReasonToVisit VARCHAR(75),InTime varchar(20),OutTime varchar(20) default NULL,foreign key(qrid) references qravailable(qrid))"
+        create_invisitors_query = "CREATE TABLE IF NOT EXISTS InVisitors (slno int primary key,vid INT,qrid VARCHAR(50),Name VARCHAR(25),PhoneNumber varchar(20),Email VARCHAR(40),PersonToVisit VARCHAR(25),ReasonToVisit VARCHAR(75),InTime varchar(20),foreign key(vid) references Records(vid))"
+        create_faculty_query = "CREATE TABLE IF NOT EXISTS Faculty (Name VARCHAR(25) PRIMARY KEY,Email varchar(40) not null, PhoneNumber varchar(20), Department varchar(10) not null)"
+        create_table_creds= "CREATE TABLE IF NOT EXISTS LoginCredentials (Username varchar(30) primary key, Password varchar(30) not null, Admin Integer not null default 0)"
+
         try:
             with connection.cursor() as cursor:
                 cursor.execute(create_qravailable_query)
@@ -77,7 +80,7 @@ class createtables(tk.Tk):
                 cursor.execute(create_faculty_query)
                 cursor.execute(create_table_creds)
                 connection.commit()
-                cursor.execute("insert into creds values('Admin','123456','1')")
+                cursor.execute("insert into LoginCredentials values('Admin','123456','1')")
                 connection.commit()
             return 1
         except Exception as e:

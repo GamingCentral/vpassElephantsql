@@ -70,7 +70,7 @@ class createtables(tk.Tk):
         drop_records_query = "DROP TABLE IF EXISTS Records"
         drop_invisitors_query = "DROP TABLE IF EXISTS InVisitors"
         drop_faculty_query = "DROP TABLE IF EXISTS faculty"
-        drop_table_creds= "DROP TABLE IF EXISTS creds"
+        drop_table_creds= "DROP TABLE IF EXISTS logincredentials"
         try:
             with connection.cursor() as cursor:
                 cursor.execute(drop_table_creds)
