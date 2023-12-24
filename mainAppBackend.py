@@ -17,7 +17,7 @@ class dbUrlFunctions:
 
 class loginFunctions:
     def __init__(self,username,password,pool):
-        self.username = username
+        self.username = str(username)
         self.password = password
         self.pool:cp.ConnectionPool = pool
     def checkUser(self):
@@ -25,11 +25,12 @@ class loginFunctions:
             self.connection = self.pool.get_connection()
             if not isinstance(self.connection, str):
                 with self.connection.cursor() as cursor:
-                    cursor.execute("SELECT admin FROM LoginCredentials WHERE username = %s AND password = %s",(self.username,self.password,))
+                    cursor.execute("SELECT admin FROM LoginCredentials WHERE LOWER(username) = %s AND password = %s",(self.username.lower(),self.password,))
                     self.admin = cursor.fetchone()
+                    self.pool.return_connection(self.connection)
                     if self.admin is not None:
-                        return int(self.admin)
+                        return int(self.admin[0])
                     else:
-                        return None
+                        return 'Incorrect Username or Password'
         except Exception as e:
-            print(e)
+            return str(e)

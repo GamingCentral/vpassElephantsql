@@ -29,15 +29,8 @@ class loginFunctions:
                     self.admin = cursor.fetchone()
                     self.pool.return_connection(self.connection)
                     if self.admin is not None:
-                        return int(self.admin[0]), self.pool
+                        return int(self.admin[0])
                     else:
-                        return None, self.pool
+                        return 'Incorrect Username or Password'
         except Exception as e:
-            print(e)
-
-if __name__=='__main__':
-    obj = loginFunctions('TESTUSER','Snist@0569',cp.poolcreate('postgres://piciqucz:oD0UWQowMN4O3Jasjd32c-7qX-hetspn@bubble.db.elephantsql.com/piciqucz'))
-    admin, pool = obj.checkUser()
-    print(admin)
-    pool.close_pool()
-    print('pool closed')
+            return str(e)

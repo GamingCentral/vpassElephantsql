@@ -233,8 +233,16 @@ class mainApp:
         self.notebook.add(self.facultyRegistration, text='Faculty Registration')
         self.notebook.add(self.qrRegistration, text='QR Registration')
 
+    def menuFrameRemover(self):
+        self.notebook.forget(self.signup)
+        self.notebook.forget(self.facultyRegistration)
+        self.notebook.forget(self.qrRegistration)
+
     def update_error_label_dburl(self,message):
         self.error_label_dburl.config(text=message)
+    
+    def update_error_label_login(self,message):
+        self.error_label_login.config(text=message)
 
     def frameSwitch(self,frame:ttk.Frame):
         try:
@@ -256,7 +264,7 @@ class mainApp:
         self.frameSwitch(self.menuFrame)
 
     def submit_press_dburl(self):
-        self.loginFrameSwitch() #remove later ###################################################
+        '''self.loginFrameSwitch()''' #remove later ###################################################
         databaseURL = self.databaseurl_entry.get()
         if databaseURL=='':
             self.update_error_label_dburl("Please enter the database url")
@@ -264,22 +272,45 @@ class mainApp:
             object = backend.dbUrlFunctions(databaseURL)
             poolObject = object.fetchPoolObject()
             if not isinstance(poolObject,int):
+                self.databaseurl_entry.delete(0,tk.END)
                 self.loginFrameSwitch()
                 self.pool=poolObject
             else:
                 self.update_error_label_dburl("Database URL was not valid or\nCheck Internet Connection")
 
     def submit_press_login(self):
-        #first run code for credentials and update admin
-        admin=False
-        if admin:
-            self.menuFrameUpdater()
-        self.menuFrameSwitch()
+        username = self.username_entry.get()
+        password = self.password_entry.get()
+        if username=='' or password=='':
+            self.update_error_label_login("Please enter the username and password")
+        else:
+            try:
+                obj = backend.loginFunctions(username,password,self.pool)
+                admin = obj.checkUser()
+                if isinstance(admin,int):
+                    if admin==1:
+                        self.menuFrameUpdater()
+                    self.menuFrameSwitch()
+                else:
+                    self.update_error_label_login(admin) # here admin becomes exception or error message
+            except Exception as e:
+                print(e)
+                self.update_error_label_login("Lost Internet Connection")
 
     def back_press_login(self):
+        self.username_entry.delete(0,tk.END)
+        self.password_entry.delete(0,tk.END)
+        self.on_closing()
+        self.pool=None
         self.dbFrameSwitch()
 
     def back_button_menu(self):
+        try:
+            self.menuFrameRemover()
+            self.username_entry.delete(0,tk.END)
+            self.password_entry.delete(0,tk.END)
+        except Exception:
+            pass
         self.loginFrameSwitch()
 
     def dropdown(self):
