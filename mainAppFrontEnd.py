@@ -244,6 +244,9 @@ class mainApp:
     def update_error_label_login(self,message):
         self.error_label_login.config(text=message)
 
+    def update_error_label_facultyRegistration(self,message):
+        self.error_label_faculty.config(text=message)
+
     def frameSwitch(self,frame:ttk.Frame):
         try:
             self.dbFrame.pack_forget()
@@ -326,7 +329,20 @@ class mainApp:
         print('to signup')
 
     def submit_press_facultyRegister(self):
-        print('to faculty register')
+        facultyName = self.facultyNameEntry.get()
+        facultyNumber = self.facultyNumberEntry.get()
+        facultyEmail = self.facultyEmailEntry.get()
+        facultyDept = self.facultyDeptEntry.get()
+        if facultyName=='' or facultyNumber=='' or facultyEmail=='' or facultyDept=='':
+            self.error_label_faculty.config("Please fill all the details")
+        else:
+            obj = backend.facultyFunctions(facultyName,facultyNumber,facultyEmail,facultyDept,self.pool)
+            response = obj.facultyRegister()
+            self.update_error_label_facultyRegistration(response)
+            self.facultyNameEntry.delete(0,tk.END)
+            self.facultyNumberEntry.delete(0,tk.END)
+            self.facultyEmailEntry.delete(0,tk.END)
+            self.facultyDeptEntry.delete(0,tk.END)
 
     def submit_press_qrRegister(self):
         print('to qr register')

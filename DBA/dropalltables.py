@@ -79,6 +79,7 @@ class createtables(tk.Tk):
                 cursor.execute(drop_records_query)
                 cursor.execute(drop_qravailable_query)
                 connection.commit()
+            self.pool.close_pool()
             return 1
         except Exception as e:
             print(e)
