@@ -276,8 +276,13 @@ class mainApp:
             poolObject = object.fetchPoolObject()
             if not isinstance(poolObject,int):
                 self.databaseurl_entry.delete(0,tk.END)
-                self.loginFrameSwitch()
                 self.pool=poolObject
+                self.facultyObject = backend.facultyFunctions(self.pool)
+                response = self.facultyObject.initalCallToJson()
+                if response==1:
+                    self.loginFrameSwitch()
+                else:
+                    self.update_error_label_dburl('Connectivity lost to database\nUnable to fetch required data')
             else:
                 self.update_error_label_dburl("Database URL was not valid or\nCheck Internet Connection")
 
@@ -336,13 +341,14 @@ class mainApp:
         if facultyName=='' or facultyNumber=='' or facultyEmail=='' or facultyDept=='':
             self.error_label_faculty.config("Please fill all the details")
         else:
-            obj = backend.facultyFunctions(facultyName,facultyNumber,facultyEmail,facultyDept,self.pool)
-            response = obj.facultyRegister()
+            response, registrationFlag = self.facultyObject.facultyRegister(facultyName,facultyNumber,facultyEmail,facultyDept)
             self.update_error_label_facultyRegistration(response)
-            self.facultyNameEntry.delete(0,tk.END)
-            self.facultyNumberEntry.delete(0,tk.END)
-            self.facultyEmailEntry.delete(0,tk.END)
-            self.facultyDeptEntry.delete(0,tk.END)
+            if registrationFlag==1:
+                self.facultyNameEntry.delete(0,tk.END)
+                self.facultyNumberEntry.delete(0,tk.END)
+                self.facultyEmailEntry.delete(0,tk.END)
+                self.facultyDeptEntry.delete(0,tk.END)
+
 
     def submit_press_qrRegister(self):
         print('to qr register')
@@ -357,6 +363,8 @@ class mainApp:
         except Exception as e:
             print(e)
 
+    def open_faculty_frame(self):
+        print('drop down')
 
 if __name__=='__main__':
     root = tk.Tk()

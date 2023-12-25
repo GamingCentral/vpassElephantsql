@@ -92,7 +92,7 @@ class MainApp(tk.Tk):
 
     def open_faculty_frame(self):
         # Read faculty data from JSON file
-        faculty_data = read_faculty_data_from_json("faculty_data.json")
+        faculty_data = read_faculty_data_from_json("json_data.json")
 
         # Open the Faculty Data Entry Frame in a pop-up dialog
         faculty_frame = tk.Toplevel(self)

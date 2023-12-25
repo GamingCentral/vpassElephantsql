@@ -1,4 +1,5 @@
 import connectionpool as cp
+import json
 
 class dbUrlFunctions:
     def __init__(self,dburl):
@@ -36,13 +37,13 @@ class loginFunctions:
             return str(e)
 
 class facultyFunctions:
-    def __init__(self,name,phno,email,dept,pool):
+    def __init__(self,pool):
+        self.pool:cp.ConnectionPool = pool
+    def facultyRegister(self,name,phno,email,dept):
         self.name = name
         self.phno = phno
         self.email = email
         self.dept = dept
-        self.pool:cp.ConnectionPool = pool
-    def facultyRegister(self):
         try:
             self.connection = self.pool.get_connection()
             if not isinstance(self.connection, str):
@@ -52,11 +53,12 @@ class facultyFunctions:
                         cursor.execute("INSERT INTO Faculty VALUES(%s,%s,%s,%s)",(self.name,self.email,self.phno,self.dept,))
                         self.connection.commit()
                         self.pool.return_connection(self.connection)
-                        return 'Faculty Registered Successfully'
+                        self.addToJson()
+                        return 'Faculty Registered Successfully',1
                     else:
-                        return 'Faculty Already Registered'
+                        return 'Faculty Already Registered',1
             else:
-                return 'Lost Internet Connection'
+                return 'Lost Internet Connection',0
         except Exception as e:
             return str(e)
     def checkAlreadyExist(self):
@@ -67,3 +69,38 @@ class facultyFunctions:
                 return 1 #return if already exists
             else:
                 return 0 #return if not exists
+    def initalCallToJson(self):
+        try:
+            self.connection = self.pool.get_connection()
+            if not isinstance(self.connection, str):
+                with self.connection.cursor() as cursor:
+                    cursor.execute("SELECT * FROM Faculty")
+                    self.result = cursor.fetchall()
+                    self.pool.return_connection(self.connection)
+                    self.json_data = []
+                    for row in self.result:
+                        data = {
+                            "name": row[0],
+                            "phno": row[1],
+                            "dept": row[3]
+                        }
+                        self.json_data.append(data)
+                    self.json_file_path = 'json_data.json'
+                    with open(self.json_file_path, 'w') as json_file:
+                        json.dump(self.json_data, json_file, indent=2)
+                    return 1
+            else:
+                return 'Check Internet Connection'
+        except Exception as e:
+            return str(e)
+    def addToJson(self):
+        data = {
+            "name": self.name,
+            "phno": self.phno,
+            "dept": self.dept
+        }
+        self.json_data.append(data)
+        self.json_file_path = 'json_data.json'
+        with open(self.json_file_path, 'w') as json_file:
+            json.dump(self.json_data, json_file, indent=2)
+    
