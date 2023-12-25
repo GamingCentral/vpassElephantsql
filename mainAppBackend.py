@@ -104,3 +104,38 @@ class facultyFunctions:
         with open(self.json_file_path, 'w') as json_file:
             json.dump(self.json_data, json_file, indent=2)
     
+class signUpFunctions:
+    def __init__(self,pool):
+        self.pool:cp.ConnectionPool = pool
+    def signUp(self,username,password,admin):
+        self.username = str(username)
+        self.password = password
+        self.admin = admin
+        try:
+            self.connection = self.pool.get_connection()
+            with self.connection.cursor() as cursor:
+                response = self.userExists(self.connection)
+                if not isinstance(response, str):
+                    if response == 1:
+                        self.pool.return_connection(self.connection)
+                        return 0
+                    else:
+                        cursor.execute("INSERT INTO LoginCredentials VALUES(%s,%s,%s)",(self.username,self.password,self.admin,))
+                        self.pool.return_connection(self.connection)
+                        self.connection.commit()
+                        return 1
+                else:
+                    return str(response)
+        except Exception as e:
+            return str(e)
+    def userExists(self,connection):
+        try:
+            with connection.cursor() as cursor:
+                cursor.execute("SELECT * FROM LoginCredentials WHERE LOWER(username) = %s",(self.username.lower(),))
+                self.result = cursor.fetchone()
+                if self.result is not None:
+                    return 1 #exists
+                else:
+                    return 0
+        except Exception as e:
+            return str(e)

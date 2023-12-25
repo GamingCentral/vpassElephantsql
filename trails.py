@@ -1,110 +1,47 @@
-import json
 import tkinter as tk
-from tkinter import ttk
 
-class FacultyDataEntryFrame(tk.Frame):
-    def __init__(self, master=None, callback=None, faculty_data=None):
-        super().__init__(master)
-        self.master = master
-        self.callback = callback
-        self.faculty_data = faculty_data or []
-        self.pack()
+class YourApp:
+    def __init__(self, master):
+        self.signup = tk.Frame(master)
+        self.signup.pack()
 
-        self.create_widgets()
+        self.exit_label = tk.Label(self.signup, text="Register User", font=("courier new bold", 35), fg="#426ae3", bg="#ebedf0")
+        self.exit_label.pack(pady=35)
 
-    def create_widgets(self):
-        # Label for branch combo box
-        self.branch_label = ttk.Label(self, text="Branch:")
-        self.branch_label.grid(row=0, column=0, padx=10, pady=10)
+        self.username_label_signup = tk.Label(self.signup, text="UserName", font=("bookman old style", 15), fg="#0a0a0a", bg="#ebedf0")
+        self.username_label_signup.pack()
+        self.username_entry_signup = tk.Entry(self.signup, width=72, font=("gothic", 13), bg="white", fg="black")
+        self.username_entry_signup.pack(pady=5)
 
-        # Create StringVars for the filters
-        self.branch_var = tk.StringVar()
-        self.phno_var = tk.StringVar()
+        self.password_label_signup = tk.Label(self.signup, text="Password", font=("bookman old style", 15), fg="#0a0a0a", bg="#ebedf0")
+        self.password_label_signup.pack()
+        self.password_entry_signup = tk.Entry(self.signup, width=72, font=("Helvetica", 12), bg="white", fg="black")
+        self.password_entry_signup.pack(pady=5)
 
-        # Combo box for selecting the branch
-        self.branch_combo_box = ttk.Combobox(self, state="readonly", textvariable=self.branch_var)
-        self.branch_combo_box.grid(row=0, column=1, padx=10, pady=10)
-        branches = set(faculty["dept"] for faculty in self.faculty_data)
-        self.branch_combo_box['values'] = [""] + list(branches)  # Add an empty option for no selection
-        self.branch_var.trace_add("write", self.update_name_combo_box)  # Attach a callback to update name combo box
+        ##########################################################################
+        self.admin_var = tk.IntVar()  # Variable to store the state of the checkbox
 
-        # Label for phone number entry
-        self.phno_label = ttk.Label(self, text="Phone Number:")
-        self.phno_label.grid(row=0, column=2, padx=10, pady=10)
+        self.admin_checkbox = tk.Checkbutton(self.signup, text="Admin", variable=self.admin_var, font=("bookman old style", 15), fg="#0a0a0a", bg="#ebedf0")
+        self.admin_checkbox.pack()
 
-        # Entry field for entering phone number
-        self.phno_entry = ttk.Entry(self, textvariable=self.phno_var)
-        self.phno_entry.grid(row=0, column=3, padx=10, pady=10)
-        self.phno_var.trace_add("write", self.update_name_combo_box)  # Attach a callback to update name combo box
+        self.submit_button = tk.Button(self.signup, width=20, command=self.submit_press_signup, text="Submit", font=("courier new bold", 15), bg="#426ae3", fg="black")
+        self.submit_button.pack(pady=30)
 
-        # Combo box for selecting the name
-        self.name_label = ttk.Label(self, text="Name:")
-        self.name_label.grid(row=1, column=0, padx=10, pady=10)
+        self.error_label_signup = tk.Label(self.signup, text='this is error', font=("bookman old style", 12), fg="red", bg='#ebedf0')
+        self.error_label_signup.pack()
 
-        self.name_combo_box = ttk.Combobox(self, state="readonly")
-        self.name_combo_box.grid(row=1, column=1, padx=10, pady=10, columnspan=2)
-        self.name_combo_box.bind("<<ComboboxSelected>>", self.on_name_select)  # Attach a callback for selection
+    def submit_press_signup(self):
+        # Get values from the entries
+        username = self.username_entry_signup.get()
+        password = self.password_entry_signup.get()
+        admin_value = self.admin_var.get()  # 1 if checked, 0 if unchecked
 
-        # Show all names by default
-        all_names = [faculty["name"] for faculty in self.faculty_data]
-        self.name_combo_box['values'] = all_names
+        # Use the values as needed (e.g., send to backend)
+        print("Username:", username)
+        print("Password:", password)
+        print("Admin:", admin_value)
 
-    def update_name_combo_box(self, *args):
-        # Update the name combo box values based on selected branch and phno
-        selected_branch = self.branch_var.get()
-        selected_phno = self.phno_var.get()
-
-        if not selected_branch and not selected_phno:
-            # If no branch or phno is selected, show all names
-            all_names = [faculty["name"] for faculty in self.faculty_data]
-            self.name_combo_box['values'] = all_names
-        else:
-            # Filter names based on selected branch and phno
-            filtered_names = [faculty["name"] for faculty in self.faculty_data
-                              if (not selected_branch or faculty["dept"] == selected_branch) and
-                              (not selected_phno or faculty["phno"] == selected_phno)]
-
-            self.name_combo_box['values'] = filtered_names
-
-    def on_name_select(self, event):
-        # Store the selected value in a variable or perform any desired action
-        selected_value = self.name_combo_box.get()
-        print(f"Selected Name: {selected_value}")
-        # Pass the selected value to the callback function
-        if self.callback:
-            self.callback(selected_value)
-
-def read_faculty_data_from_json(file_path):
-    with open(file_path, 'r') as file:
-        faculty_data = json.load(file)
-    return faculty_data
-
-class MainApp(tk.Tk):
-    def __init__(self):
-        super().__init__()
-
-        # Create the main window
-        self.title("Main Application")
-
-        # Button to open Faculty Data Entry Frame
-        self.open_frame_button = ttk.Button(self, text="Open Faculty Data Entry", command=self.open_faculty_frame)
-        self.open_frame_button.pack(pady=20)
-
-    def open_faculty_frame(self):
-        # Read faculty data from JSON file
-        faculty_data = read_faculty_data_from_json("json_data.json")
-
-        # Open the Faculty Data Entry Frame in a pop-up dialog
-        faculty_frame = tk.Toplevel(self)
-        faculty_frame.title("Faculty Data Entry")
-        
-        # Define a callback function to receive the selected value
-        def callback(selected_value):
-            print(f"Selected Value in Main Window: {selected_value}")
-        
-        faculty_data_entry = FacultyDataEntryFrame(faculty_frame, callback, faculty_data)
-
-# Run the Tkinter main loop
 if __name__ == "__main__":
-    app = MainApp()
-    app.mainloop()
+    root = tk.Tk()
+    app = YourApp(root)
+    root.mainloop()

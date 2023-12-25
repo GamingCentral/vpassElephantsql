@@ -178,6 +178,10 @@ class mainApp:
         self.password_entry_singup = tk.Entry(self.signup, width=72,font=("Helvetica",12), bg="white", fg="black")
         self.password_entry_singup.pack(pady=5)
 
+        self.admin_var = tk.IntVar()
+        self.admin_checkbox = tk.Checkbutton(self.signup, text="Admin", variable=self.admin_var, font=("bookman old style", 15), fg="#0a0a0a", bg="#ebedf0")
+        self.admin_checkbox.pack(pady=5)
+
         ##########################################################################
         self.submit_button = tk.Button(self.signup, width=20, command=self.submit_press_signup, text="Submit",font=("courier new bold",15),bg="#426ae3",fg="black")
         self.submit_button.pack(pady=30)
@@ -249,6 +253,9 @@ class mainApp:
     def update_error_label_facultyRegistration(self,message):
         self.error_label_faculty.config(text=message)
 
+    def update_error_label_signup(self,message):
+        self.error_label_signup.config(text=message)
+
     def frameSwitch(self,frame:ttk.Frame):
         try:
             self.dbFrame.pack_forget()
@@ -316,9 +323,9 @@ class mainApp:
 
     def back_button_menu(self):
         try:
-            self.menuFrameRemover()
             self.username_entry.delete(0,tk.END)
             self.password_entry.delete(0,tk.END)
+            self.menuFrameRemover()
         except Exception:
             pass
         self.loginFrameSwitch()
@@ -343,7 +350,21 @@ class mainApp:
         print('submit function here')
 
     def submit_press_signup(self):
-        print('to signup')
+        if self.username_entry_singup.get()=='' or self.password_entry_singup.get()=='':
+            self.update_error_label_signup("Please fill all the details")
+        else:
+            obj = backend.signUpFunctions(self.pool)
+            response = obj.signUp(self.username_entry_singup.get(),self.password_entry_singup.get(),self.admin_var.get())
+            if not isinstance(response,str):
+                if response==1:
+                    self.update_error_label_signup("User Registered Successfully")
+                else:
+                    self.update_error_label_signup('User Already Exists')
+                self.username_entry_singup.delete(0,tk.END)
+                self.password_entry_singup.delete(0,tk.END)
+            else:
+                self.update_error_label_signup(response)
+
 
     def submit_press_facultyRegister(self):
         facultyName = self.facultyNameEntry.get()
@@ -353,9 +374,9 @@ class mainApp:
         if facultyName=='' or facultyNumber=='' or facultyEmail=='' or facultyDept=='':
             self.error_label_faculty.config("Please fill all the details")
         else:
-            response, registrationFlag = self.facultyObject.facultyRegister(facultyName,facultyNumber,facultyEmail,facultyDept)
+            response = self.facultyObject.facultyRegister(facultyName,facultyNumber,facultyEmail,facultyDept)
             self.update_error_label_facultyRegistration(response)
-            if registrationFlag==1:
+            if response==1:
                 self.facultyNameEntry.delete(0,tk.END)
                 self.facultyNumberEntry.delete(0,tk.END)
                 self.facultyEmailEntry.delete(0,tk.END)
@@ -386,11 +407,8 @@ class FacultyDataEntryFrame(tk.Frame):
         self.create_widgets()
 
     def create_widgets(self):
-        # Label for branch combo box
         self.branch_label = ttk.Label(self, text="Branch:")
         self.branch_label.grid(row=0, column=0, padx=10, pady=10)
-
-        # Create StringVars for the filters
         self.branch_var = tk.StringVar()
         self.phno_var = tk.StringVar()
 
@@ -401,16 +419,13 @@ class FacultyDataEntryFrame(tk.Frame):
         self.branch_combo_box['values'] = [""] + list(branches)  # Add an empty option for no selection
         self.branch_var.trace_add("write", self.update_name_combo_box)  # Attach a callback to update name combo box
 
-        # Label for phone number entry
         self.phno_label = ttk.Label(self, text="Phone Number:")
         self.phno_label.grid(row=0, column=2, padx=10, pady=10)
 
-        # Entry field for entering phone number
         self.phno_entry = ttk.Entry(self, textvariable=self.phno_var)
         self.phno_entry.grid(row=0, column=3, padx=10, pady=10)
         self.phno_var.trace_add("write", self.update_name_combo_box)  # Attach a callback to update name combo box
 
-        # Combo box for selecting the name
         self.name_label = ttk.Label(self, text="Name:")
         self.name_label.grid(row=1, column=0, padx=10, pady=10)
 
@@ -418,21 +433,17 @@ class FacultyDataEntryFrame(tk.Frame):
         self.name_combo_box.grid(row=1, column=1, padx=10, pady=10, columnspan=2)
         self.name_combo_box.bind("<<ComboboxSelected>>", self.on_name_select)  # Attach a callback for selection
 
-        # Show all names by default
         all_names = [faculty["name"] for faculty in self.faculty_data]
         self.name_combo_box['values'] = all_names
 
     def update_name_combo_box(self, *args):
-        # Update the name combo box values based on selected branch and phno
         selected_branch = self.branch_var.get()
         selected_phno = self.phno_var.get()
 
         if not selected_branch and not selected_phno:
-            # If no branch or phno is selected, show all names
             all_names = [faculty["name"] for faculty in self.faculty_data]
             self.name_combo_box['values'] = all_names
         else:
-            # Filter names based on selected branch and phno
             filtered_names = [faculty["name"] for faculty in self.faculty_data
                               if (not selected_branch or faculty["dept"] == selected_branch) and
                               (not selected_phno or faculty["phno"] == selected_phno)]
@@ -440,10 +451,8 @@ class FacultyDataEntryFrame(tk.Frame):
             self.name_combo_box['values'] = filtered_names
 
     def on_name_select(self, event):
-        # Store the selected value in a variable or perform any desired action
         selected_value = self.name_combo_box.get()
         print(f"Selected Name: {selected_value}")
-        # Pass the selected value to the callback function
         if self.callback:
             self.callback(selected_value)
 

@@ -51,13 +51,17 @@ class ConnectionPool:
             time.sleep(60)  # Check every minute
 
     def recover_connection(self, conn):
-        self.connection_pool.putconn(conn)
-        new_conn = self.connection_pool.getconn()
-        if new_conn is not None:
-            print("Recovered connection:", conn)
-            return 1
-        else:
-            print("Could not recover connection:", conn)
+        try:
+            self.connection_pool.putconn(conn)
+            new_conn = self.connection_pool.getconn()
+            if new_conn is not None:
+                print("Recovered connection:", conn)
+                return 1
+            else:
+                print("Could not recover connection:", conn)
+                return 0
+        except Exception as e:
+            print(e)
             return 0
 
 # Usage
