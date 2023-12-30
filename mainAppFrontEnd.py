@@ -161,8 +161,8 @@ class mainApp:
         self.submit_button = tk.Button(self.visitorExit, width=30, command=self.submit_press_visitorExit, text="Submit", font=("courier new bold", 15), bg="#426ae3", fg="black")
         self.submit_button.pack(pady=35)
 
-        self.error_label_visitorEntry = tk.Label(self.visitorExit, text='this is error', font=("bookman old style", 15), fg="red", bg='#ebedf0')
-        self.error_label_visitorEntry.pack(pady=15)
+        self.error_label_visitorExit = tk.Label(self.visitorExit, text='this is error', font=("bookman old style", 15), fg="red", bg='#ebedf0')
+        self.error_label_visitorExit.pack(pady=15)
     
     def addSignUp(self):
         self.exit_label = tk.Label(self.signup, text="Register User", font=("courier new bold", 35), fg="#426ae3", bg="#ebedf0")
@@ -255,6 +255,15 @@ class mainApp:
 
     def update_error_label_signup(self,message):
         self.error_label_signup.config(text=message)
+
+    def update_error_label_visitorEntry(self,message):
+        self.error_label_visitorEntry.config(text=message)
+
+    def update_error_label_visitorExit(self,message):
+        self.error_label_visitorExit.config(text=message)
+
+    def update_error_label_qr(self,message):
+        self.error_label_qr.config(text=message)
 
     def frameSwitch(self,frame:ttk.Frame):
         try:
@@ -377,9 +386,17 @@ class mainApp:
                 self.facultyEmailEntry.delete(0,tk.END)
                 self.facultyDeptEntry.delete(0,tk.END)
 
-
     def submit_press_qrRegister(self):
-        print('to qr register')
+        if self.barcodeNewEntry.get()=='':
+            self.update_error_label_qr("Please scan the barcode after clicking on the feild provided")
+        else:
+            obj = backend.newBarcodeRegistrationFuctions(self.pool)
+            response = obj.registerQR(self.barcodeNewEntry.get())
+            if not isinstance(response,str):
+                self.update_error_label_qr("Barcode has been registered")
+                self.barcodeNewEntry.delete(0,tk.END)
+            else:
+                self.update_error_label_qr(response)
 
     def on_closing(self):
         try:

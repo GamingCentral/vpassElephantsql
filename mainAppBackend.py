@@ -118,7 +118,7 @@ class signUpFunctions:
                 if not isinstance(response, str):
                     if response == 1:
                         self.pool.return_connection(self.connection)
-                        return 'User Already Exists' #try reseting password?
+                        return 'User Already Exists' #try reseting password? ###################################
                     else:
                         cursor.execute("INSERT INTO LoginCredentials VALUES(%s,%s,%s)",(self.username,self.password,self.admin,))
                         self.connection.commit()
@@ -139,3 +139,37 @@ class signUpFunctions:
                     return 0
         except Exception as e:
             return str(e)
+
+class newBarcodeRegistrationFuctions:
+    def __init__(self,pool):
+        self.pool:cp.ConnectionPool = pool
+    def checkQrExists(self,connection, barcode):
+        try:
+            with connection.cursor() as cursor:
+                cursor.execute("SELECT * FROM qravailable where qrid = %s",(barcode,))
+                result = cursor.fetchone()
+                if result is not None:
+                    return 1 # qr already exists
+                else:
+                    return 0
+        except Exception as e:
+            return str(e)
+    def registerQR(self,barcode):
+        try:
+            self.connection=self.pool.get_connection()
+            if not isinstance(self.connection, str):
+                with self.connection.cursor() as cursor:
+                    returned = self.checkQrExists(self.connection,barcode)
+                    if not isinstance(returned,str):
+                        if returned == 0:
+                            cursor.execute("INSERT INTO qravailable VALUES(%s,1)",(barcode,))
+                            self.connection.commit()
+                            self.pool.return_connection(self.connection)
+                            return 1
+                        else:
+                            return 'QR already registered' #try reseting availability? #########################
+            else:
+                return 'Check Internet Connection'
+        except Exception as e:
+            return str(e)
+                    
