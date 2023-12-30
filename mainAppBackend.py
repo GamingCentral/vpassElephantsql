@@ -109,7 +109,7 @@ class signUpFunctions:
         self.pool:cp.ConnectionPool = pool
     def signUp(self,username,password,admin):
         self.username = str(username)
-        self.password = password
+        self.password = str(password)
         self.admin = admin
         try:
             self.connection = self.pool.get_connection()
@@ -118,11 +118,11 @@ class signUpFunctions:
                 if not isinstance(response, str):
                     if response == 1:
                         self.pool.return_connection(self.connection)
-                        return 0
+                        return 'User Already Exists' #try reseting password?
                     else:
                         cursor.execute("INSERT INTO LoginCredentials VALUES(%s,%s,%s)",(self.username,self.password,self.admin,))
-                        self.pool.return_connection(self.connection)
                         self.connection.commit()
+                        self.pool.return_connection(self.connection)
                         return 1
                 else:
                     return str(response)
@@ -134,7 +134,7 @@ class signUpFunctions:
                 cursor.execute("SELECT * FROM LoginCredentials WHERE LOWER(username) = %s",(self.username.lower(),))
                 self.result = cursor.fetchone()
                 if self.result is not None:
-                    return 1 #exists
+                    return 1 # user already exists
                 else:
                     return 0
         except Exception as e:

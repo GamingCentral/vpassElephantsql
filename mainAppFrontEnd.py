@@ -153,7 +153,7 @@ class mainApp:
         self.exit_label = tk.Label(self.visitorExit, text="Visitor Exit", font=("courier new bold", 35), fg="#426ae3", bg="#ebedf0")
         self.exit_label.pack(pady=35)
 
-        self.barcodeExit = tk.Label(self.visitorExit, text="Name", font=("bookman old style", 15),fg="#0a0a0a", bg="#ebedf0")
+        self.barcodeExit = tk.Label(self.visitorExit, text="Scan Barcode Here", font=("bookman old style", 15),fg="#0a0a0a", bg="#ebedf0")
         self.barcodeExit.pack()
         self.visitorBarcodeExit = tk.Entry(self.visitorExit, width=72,font=("gothic",13), bg="white", fg="black")
         self.visitorBarcodeExit.pack(pady=10)
@@ -340,7 +340,6 @@ class mainApp:
             self.dropdownFrame.destroy()
             self.faculty_selected = selected_value
             print(self.faculty_selected)
-        
         faculty_data_entry = FacultyDataEntryFrame(self.dropdownFrame, callback, self.faculty_data)
 
     def submit_press_visitorEntry(self):
@@ -356,15 +355,11 @@ class mainApp:
             obj = backend.signUpFunctions(self.pool)
             response = obj.signUp(self.username_entry_singup.get(),self.password_entry_singup.get(),self.admin_var.get())
             if not isinstance(response,str):
-                if response==1:
-                    self.update_error_label_signup("User Registered Successfully")
-                else:
-                    self.update_error_label_signup('User Already Exists')
+                self.update_error_label_signup("User has been registered")
                 self.username_entry_singup.delete(0,tk.END)
                 self.password_entry_singup.delete(0,tk.END)
             else:
                 self.update_error_label_signup(response)
-
 
     def submit_press_facultyRegister(self):
         facultyName = self.facultyNameEntry.get()
