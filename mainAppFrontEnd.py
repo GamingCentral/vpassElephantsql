@@ -39,6 +39,7 @@ class mainApp:
         self.menuFrame = ttk.Frame(root,style='TFrame')
         self.pool = None
         self.faculty_selected = None
+        self.faculty_selected = None
         #self.admin = 0 #default
         self.dbFrameInitalizer()
         self.loginFrameInitializer()
@@ -146,7 +147,7 @@ class mainApp:
         self.submit_button = tk.Button(self.visitorEntry, width=40, command=self.submit_press_visitorEntry, text="Submit", font=("courier new bold", 15), bg="#426ae3", fg="black")
         self.submit_button.pack(pady=15)
 
-        self.error_label_visitorEntry = tk.Label(self.visitorEntry, text='this is error', font=("bookman old style", 15), fg="red", bg='#ebedf0')
+        self.error_label_visitorEntry = tk.Label(self.visitorEntry, text=None, font=("bookman old style", 15), fg="red", bg='#ebedf0')
         self.error_label_visitorEntry.pack()
     
     def addVisitorExit(self):
@@ -161,7 +162,7 @@ class mainApp:
         self.submit_button = tk.Button(self.visitorExit, width=30, command=self.submit_press_visitorExit, text="Submit", font=("courier new bold", 15), bg="#426ae3", fg="black")
         self.submit_button.pack(pady=35)
 
-        self.error_label_visitorExit = tk.Label(self.visitorExit, text='this is error', font=("bookman old style", 15), fg="red", bg='#ebedf0')
+        self.error_label_visitorExit = tk.Label(self.visitorExit, text=None, font=("bookman old style", 15), fg="red", bg='#ebedf0')
         self.error_label_visitorExit.pack(pady=15)
     
     def addSignUp(self):
@@ -186,7 +187,7 @@ class mainApp:
         self.submit_button = tk.Button(self.signup, width=20, command=self.submit_press_signup, text="Submit",font=("courier new bold",15),bg="#426ae3",fg="black")
         self.submit_button.pack(pady=30)
 
-        self.error_label_signup = tk.Label(self.signup, text='this is error', font=("bookman old style", 12), fg="red",bg='#ebedf0')
+        self.error_label_signup = tk.Label(self.signup, text=None, font=("bookman old style", 12), fg="red",bg='#ebedf0')
         self.error_label_signup.pack()
 
     def addFacultyRegistration(self):
@@ -216,7 +217,7 @@ class mainApp:
         self.submit_button = tk.Button(self.facultyRegistration, width=40, command=self.submit_press_facultyRegister, text="Submit", font=("courier new bold", 15), bg="#426ae3", fg="black")
         self.submit_button.pack(pady=15)
 
-        self.error_label_faculty = tk.Label(self.facultyRegistration, text='this is error', font=("bookman old style", 15), fg="red", bg='#ebedf0')
+        self.error_label_faculty = tk.Label(self.facultyRegistration, text=None, font=("bookman old style", 15), fg="red", bg='#ebedf0')
         self.error_label_faculty.pack()
 
     def addqrRegistration(self):
@@ -231,7 +232,7 @@ class mainApp:
         self.submit_button = tk.Button(self.qrRegistration, width=30, command=self.submit_press_qrRegister, text="Submit", font=("courier new bold", 15), bg="#426ae3", fg="black")
         self.submit_button.pack(pady=35)
 
-        self.error_label_qr = tk.Label(self.qrRegistration, text='this is error', font=("bookman old style", 15), fg="red", bg='#ebedf0')
+        self.error_label_qr = tk.Label(self.qrRegistration, text=None, font=("bookman old style", 15), fg="red", bg='#ebedf0')
         self.error_label_qr.pack(pady=15) 
 
     def menuFrameUpdater(self):
@@ -348,12 +349,32 @@ class mainApp:
         def callback(selected_value):
             self.dropdownFrame.destroy()
             self.faculty_selected = selected_value
-            print(self.faculty_selected)
         faculty_data_entry = FacultyDataEntryFrame(self.dropdownFrame, callback, self.faculty_data)
 
     def submit_press_visitorEntry(self):
-        print('visitor entry data')
-
+        self.visitorName = self.visitorNameEntry.get()
+        self.visitorNumber = self.visitorNumberEntry.get()
+        self.visitorEmail = self.visitorEmailEntry.get()
+        self.personToMeet = self.faculty_selected
+        self.reasonToMeet = self.visitorReasonEntry.get()
+        self.visitorBarcode = self.visitorBarcodeEntry.get()
+        if self.visitorName=='' or self.visitorNumber=='' or self.visitorEmail=='' or self.personToMeet==None or self.reasonToMeet=='' or self.visitorBarcode=='':
+            self.update_error_label_visitorEntry("Please fill all the details")
+        else:
+            obj=backend.visitorEntryFunctions(self.pool)
+            response = obj.registerVisitor(self.visitorName,self.visitorNumber,self.visitorEmail,self.personToMeet,self.reasonToMeet,self.visitorBarcode)
+            if not isinstance(response,str):
+                if response==1:
+                    self.update_error_label_visitorEntry("Visitor has been registered succesfully")
+                    self.visitorNameEntry.delete(0,tk.END)
+                    self.visitorNumberEntry.delete(0,tk.END)
+                    self.visitorEmailEntry.delete(0,tk.END)
+                    self.visitorReasonEntry.delete(0,tk.END)
+                    self.visitorBarcodeEntry.delete(0,tk.END)
+                    self.faculty_selected = None
+            else:
+                self.update_error_label_visitorEntry(response)
+        
     def submit_press_visitorExit(self):
         print('submit function here')
 
@@ -379,12 +400,15 @@ class mainApp:
             self.error_label_faculty.config("Please fill all the details")
         else:
             response = self.facultyObject.facultyRegister(facultyName,facultyNumber,facultyEmail,facultyDept)
-            self.update_error_label_facultyRegistration(response)
-            if response==1:
-                self.facultyNameEntry.delete(0,tk.END)
-                self.facultyNumberEntry.delete(0,tk.END)
-                self.facultyEmailEntry.delete(0,tk.END)
-                self.facultyDeptEntry.delete(0,tk.END)
+            if not isinstance(response,str):
+                if response==1:
+                    self.update_error_label_facultyRegistration("Faculty has been registered succesfully")
+                    self.facultyNameEntry.delete(0,tk.END)
+                    self.facultyNumberEntry.delete(0,tk.END)
+                    self.facultyEmailEntry.delete(0,tk.END)
+                    self.facultyDeptEntry.delete(0,tk.END)
+            else:
+                self.update_error_label_facultyRegistration(response)
 
     def submit_press_qrRegister(self):
         if self.barcodeNewEntry.get()=='':

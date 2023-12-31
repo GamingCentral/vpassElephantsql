@@ -1,22 +1,12 @@
 [
   {
-    "name": "mannoj",
+    "name": "Other Reasons",
+    "phno": "admin@institute.in",
+    "dept": "general"
+  },
+  {
+    "name": "testfaculty",
     "phno": "purnnaamannojtaba@gmail.com",
     "dept": "CSE"
-  },
-  {
-    "name": "Purnnaa Mannoj M",
-    "phno": "21311A0569@sreenidhi.edu.in",
-    "dept": "CSE"
-  },
-  {
-    "name": "jayaram",
-    "phno": "jayaram.m9@gmail.com",
-    "dept": "MBA"
-  },
-  {
-    "name": "anupama",
-    "phno": "anupama@gmail.com",
-    "dept": "BCom"
   }
 ]

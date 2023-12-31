@@ -67,8 +67,8 @@ class createtables(tk.Tk):
 
     def tablecreate(self,connection):
         create_qravailable_query="CREATE TABLE IF NOT EXISTS QRavailable (qrid VARCHAR(50) PRIMARY KEY,availability integer default 1 not null)"
-        create_records_query = "CREATE TABLE IF NOT EXISTS Records (vid INT PRIMARY KEY,qrid VARCHAR(50),Name VARCHAR(25),PhoneNumber varchar(20),Email VARCHAR(40),PersonToVisit VARCHAR(25), ReasonToVisit VARCHAR(75),InTime varchar(20),OutTime varchar(20) default NULL,foreign key(qrid) references qravailable(qrid))"
-        create_invisitors_query = "CREATE TABLE IF NOT EXISTS InVisitors (slno int primary key,vid INT,qrid VARCHAR(50),Name VARCHAR(25),PhoneNumber varchar(20),Email VARCHAR(40),PersonToVisit VARCHAR(25),ReasonToVisit VARCHAR(75),InTime varchar(20),foreign key(vid) references Records(vid))"
+        create_records_query = "CREATE TABLE IF NOT EXISTS Records (vid BIGINT PRIMARY KEY,qrid VARCHAR(50),Name VARCHAR(25),PhoneNumber varchar(20),Email VARCHAR(40),PersonToVisit VARCHAR(25), ReasonToVisit VARCHAR(75),InTime varchar(20),OutTime varchar(20) default NULL,foreign key(qrid) references qravailable(qrid))"
+        create_invisitors_query = "CREATE TABLE IF NOT EXISTS InVisitors (vid BIGINT,qrid VARCHAR(50),Name VARCHAR(25),PhoneNumber varchar(20),Email VARCHAR(40),PersonToVisit VARCHAR(25),ReasonToVisit VARCHAR(75),InTime varchar(20),foreign key(vid) references Records(vid))"
         create_faculty_query = "CREATE TABLE IF NOT EXISTS Faculty (Name VARCHAR(25),Email varchar(40) not null, PhoneNumber varchar(20) PRIMARY KEY, Department varchar(10) not null)"
         create_table_creds= "CREATE TABLE IF NOT EXISTS LoginCredentials (Username varchar(30) primary key, Password varchar(30) not null, Admin Integer not null default 0)"
 
@@ -81,6 +81,7 @@ class createtables(tk.Tk):
                 cursor.execute(create_table_creds)
                 connection.commit()
                 cursor.execute("insert into LoginCredentials values('Admin','123456','1')")
+                cursor.execute("insert into Faculty values('Other Reasons','admin@institute.in','0','general')")
                 connection.commit()
             self.pool.close_pool()
             return 1

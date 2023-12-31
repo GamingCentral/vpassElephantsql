@@ -1,5 +1,6 @@
 import connectionpool as cp
 import json
+from datetime import datetime
 
 class dbUrlFunctions:
     def __init__(self,dburl):
@@ -54,11 +55,11 @@ class facultyFunctions:
                         self.connection.commit()
                         self.pool.return_connection(self.connection)
                         self.addToJson()
-                        return 'Faculty Registered Successfully',1
+                        return 1
                     else:
-                        return 'Faculty Already Registered',1
+                        return 'Faculty Already Registered'
             else:
-                return 'Lost Internet Connection',0
+                return 'Lost Internet Connection'
         except Exception as e:
             return str(e)
     def checkAlreadyExist(self):
@@ -172,4 +173,78 @@ class newBarcodeRegistrationFuctions:
                 return 'Check Internet Connection'
         except Exception as e:
             return str(e)
-                    
+
+class visitorEntryFunctions:
+    def __init__(self,pool):
+        self.pool:cp.ConnectionPool = pool
+    def getVID(self):
+        current_time = datetime.now()
+        formatted_date = current_time.strftime("%d%m%Y")
+        timestamp=int(formatted_date)
+        try:
+            self.connection=self.pool.get_connection()
+            if not isinstance(self.connection, str):
+                with self.connection.cursor() as cursor:
+                    cursor.execute("SELECT vid FROM Records ORDER BY vid DESC LIMIT 1")
+                    self.result = cursor.fetchone()
+                    self.pool.return_connection(self.connection)
+                    if self.result is not None:
+                        print(self.result[0],type(self.result[0]))
+                        print(timestamp,type(timestamp))
+                        print(self.result[0]%1000)
+                        if timestamp == (self.result[0]//1000):
+                            print('using result value that was fecthed: '+str(self.result[0]+1))
+                            return int(self.result[0]+1)
+                    print('using timestamp value')
+                    return timestamp*1000+1
+            else:
+                return 'Check Internet Connection'
+        except Exception as e:
+            return str(e)
+    '''def getQrid(self):
+        try:
+            self.connection=self.pool.get_connection()
+            if not isinstance(self.connection, str):
+                with self.connection.cursor() as cursor:
+                    cursor.execute("SELECT qrid FROM qravailable WHERE availability = 1 LIMIT 1")
+                    self.result = cursor.fetchone()
+                    self.pool.return_connection(self.connection)
+                    if self.result is not None:
+                        return self.result[0]
+                    else:
+                        return 'No QR Available'
+            else:
+                return 'Check Internet Connection'
+        except Exception as e:
+            return str(e)'''
+    def getIntime(self):
+        current_date = datetime.now()
+        current_time = current_date.strftime("%d/%m/%Y %H:%M:%S")
+        return str(current_time)
+    def registerVisitor(self,name,phone,email,person,reason,barcode):
+        self.name = name
+        self.phone = phone
+        self.email = email
+        self.person = person
+        self.reason = reason
+        self.vid = self.getVID()
+        self.qrid = barcode
+        self.intime = self.getIntime()
+        if isinstance(self.vid,str):
+            return self.vid
+        else:
+            print(self.vid)
+            try:
+                self.connection=self.pool.get_connection()
+                if not isinstance(self.connection, str):
+                    with self.connection.cursor() as cursor:
+                        cursor.execute("INSERT INTO Records VALUES(%s,%s,%s,%s,%s,%s,%s,%s,NULL)",(self.vid,self.qrid,self.name,self.phone,self.email,self.person,self.reason,self.intime,))
+                        cursor.execute("INSERT INTO InVisitors VALUES(%s,%s,%s,%s,%s,%s,%s,%s)",(self.vid,self.qrid,self.name,self.phone,self.email,self.person,self.reason,self.intime,))
+                        cursor.execute("UPDATE qravailable SET availability = 0 WHERE qrid = %s",(self.qrid,))
+                        self.connection.commit()
+                        self.pool.return_connection(self.connection)
+                        return 1
+                else:
+                    return 'Check Internet Connection'
+            except Exception as e:
+                return str(e)
