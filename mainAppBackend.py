@@ -1,6 +1,11 @@
 import connectionpool as cp
 import json
 from datetime import datetime
+from email.message import EmailMessage
+import ssl
+import smtplib
+import logging
+import threading
 
 class dbUrlFunctions:
     def __init__(self,dburl):
@@ -185,7 +190,7 @@ class visitorEntryFunctions:
             self.connection=self.pool.get_connection()
             if not isinstance(self.connection, str):
                 with self.connection.cursor() as cursor:
-                    cursor.execute("SELECT vid FROM Records ORDER BY vid DESC LIMIT 1")
+                    cursor.execute("SELECT vid from records order by intime limit 1")
                     self.result = cursor.fetchone()
                     self.pool.return_connection(self.connection)
                     if self.result is not None:
@@ -238,13 +243,92 @@ class visitorEntryFunctions:
                 self.connection=self.pool.get_connection()
                 if not isinstance(self.connection, str):
                     with self.connection.cursor() as cursor:
-                        cursor.execute("INSERT INTO Records VALUES(%s,%s,%s,%s,%s,%s,%s,%s,NULL)",(self.vid,self.qrid,self.name,self.phone,self.email,self.person,self.reason,self.intime,))
-                        cursor.execute("INSERT INTO InVisitors VALUES(%s,%s,%s,%s,%s,%s,%s,%s)",(self.vid,self.qrid,self.name,self.phone,self.email,self.person,self.reason,self.intime,))
-                        cursor.execute("UPDATE qravailable SET availability = 0 WHERE qrid = %s",(self.qrid,))
-                        self.connection.commit()
+                        try:
+                            cursor.execute("INSERT INTO Records VALUES(%s,%s,%s,%s,%s,%s,%s,%s,NULL)",(self.vid,self.qrid,self.name,self.phone,self.email,self.person,self.reason,self.intime,))
+                            cursor.execute("INSERT INTO InVisitors VALUES(%s,%s,%s,%s,%s,%s,%s,%s)",(self.vid,self.qrid,self.name,self.phone,self.email,self.person,self.reason,self.intime,))
+                            cursor.execute("UPDATE qravailable SET availability = 0 WHERE qrid = %s",(self.qrid,))
+                            obj=mailtoFunctions(self.pool)
+                            threading.Thread(target=obj.sendmail(self.name,self.phone,self.email,self.person,self.reason)).start()
+                            self.connection.commit()
+                        except Exception as e:
+                            return str(e)
                         self.pool.return_connection(self.connection)
                         return 1
                 else:
                     return 'Check Internet Connection'
             except Exception as e:
                 return str(e)
+
+class mailtoFunctions:
+    def __init__(self,pool):
+        self.pool:cp.ConnectionPool = pool
+    def fetchEmail(self,person):
+        try:
+            self.connection = self.pool.get_connection()
+            if not isinstance(self.connection, str):
+                with self.connection.cursor() as cursor:
+                    cursor.execute("SELECT Email FROM Faculty WHERE Name = %s",(person,))
+                    self.result = cursor.fetchone()
+                    self.pool.return_connection(self.connection)
+                    if self.result is not None:
+                        return self.result[0],1
+            else:
+                return 'Check Internet Connection',0
+        except Exception as e:
+            return str(e),0
+    def sendmail(self, visitor_name, visitor_phone, visitorEmail, person_to_meet, reason_of_visit):
+        email_sender = '21311A0569@sreenidhi.edu.in'
+        email_password = 'hbmmykgtaadqnjpp'
+        email_recipient, flag = self.fetchEmail(person_to_meet)
+
+        if flag == 1:
+            subject = 'Visitor Management System'
+            body = f"Mr./Ms. {visitor_name} is here to meet you.\n" \
+                   f"He/She is at the gate and is expecting to meet you soon.\n" \
+                   f"Contact: {visitor_phone}\nEmail: {visitorEmail}\nReason: {reason_of_visit}"
+
+            em = EmailMessage()
+            em['From'] = email_sender
+            em['To'] = email_recipient  # Use the actual recipient here
+            em['Subject'] = subject
+            em.set_content(body)
+            context = ssl.create_default_context()
+            try:
+                with smtplib.SMTP_SSL('smtp.gmail.com', 465, context=context) as smtp:
+                    smtp.login(email_sender, email_password)
+                    smtp.sendmail(email_sender, email_recipient, em.as_string())
+            except Exception as e:
+                logging.error(f"Error sending email: {str(e)}")
+        else:
+            logging.error(f"Unable to fetch recipient email for {person_to_meet}")
+
+class visiotrExitFunctions:
+    def __init__(self,pool):
+        self.pool:cp.ConnectionPool = pool
+    def outTimeFetch(self):
+        current_date = datetime.now()
+        current_time = current_date.strftime("%d/%m/%Y %H:%M:%S")
+        return str(current_time)
+    def visitorExit(self,barcode):
+        self.barcode = barcode
+        self.outime = self.outTimeFetch()
+        try:
+            self.connection = self.pool.get_connection()
+            if not isinstance(self.connection, str):
+                with self.connection.cursor() as cursor:
+                    cursor.execute("SELECT vid FROM Records WHERE qrid = %s AND outtime IS NULL",(self.barcode,))
+                    self.result = cursor.fetchone()
+                    if self.result is not None:
+                        self.vid = self.result[0]
+                        cursor.execute("UPDATE Records SET outtime = %s WHERE vid = %s",(self.outime,self.vid,))
+                        cursor.execute("UPDATE qravailable SET availability = 1 WHERE qrid = %s",(self.barcode,))
+                        cursor.execute("DELETE FROM InVisitors WHERE vid = %s",(self.vid,))
+                        self.connection.commit()
+                        self.pool.return_connection(self.connection)
+                        return 1
+                    else:
+                        return 'Invalid QR'
+            else:
+                return 'Check Internet Connection'
+        except Exception as e:
+            return str(e)

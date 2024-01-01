@@ -2,6 +2,7 @@ import tkinter as tk
 from tkinter import ttk
 import mainAppBackend as backend
 import json
+import threading
 '''from loginFrame import Login
 from menuFrame import Men'''
 #import connectionpool as cp
@@ -286,7 +287,6 @@ class mainApp:
         self.frameSwitch(self.menuFrame)
 
     def submit_press_dburl(self):
-        '''self.loginFrameSwitch()''' #remove later ###################################################
         databaseURL = self.databaseurl_entry.get()
         if databaseURL=='':
             self.update_error_label_dburl("Please enter the database url")
@@ -336,6 +336,10 @@ class mainApp:
             self.username_entry.delete(0,tk.END)
             self.password_entry.delete(0,tk.END)
             self.menuFrameRemover()
+            self.error_label_faculty.config(text=None)
+            self.error_label_signup.config(text=None)
+            self.error_label_visitorEntry.config(text=None)
+            self.error_label_visitorExit.config(text=None)
         except Exception:
             pass
         self.loginFrameSwitch()
@@ -376,7 +380,18 @@ class mainApp:
                 self.update_error_label_visitorEntry(response)
         
     def submit_press_visitorExit(self):
-        print('submit function here')
+        self.exitBarcode = self.visitorBarcodeExit.get()
+        if self.exitBarcode == '':
+            self.update_error_label_visitorExit("Please scan the barcode after clicking on the feild provided")
+        else:
+            obj=backend.visiotrExitFunctions(self.pool)
+            response = obj.visitorExit(self.exitBarcode)
+            if not isinstance(response,str):
+                if response==1:
+                    self.update_error_label_visitorExit("Visitor has been exited succesfully")
+                    self.visitorBarcodeExit.delete(0,tk.END)
+            else:
+                self.update_error_label_visitorExit(response)
 
     def submit_press_signup(self):
         if self.username_entry_singup.get()=='' or self.password_entry_singup.get()=='':
