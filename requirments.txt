@@ -58,3 +58,5 @@ connection to server at "localhost" (127.0.0.1), port 5432 failed: Connection re
     disable database and signup for admin=false
 
 ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+dburl: postgres://piciqucz:oD0UWQowMN4O3Jasjd32c-7qX-hetspn@bubble.db.elephantsql.com/piciqucz
