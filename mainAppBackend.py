@@ -277,8 +277,8 @@ class mailtoFunctions:
         except Exception as e:
             return str(e),0
     def sendmail(self, visitor_name, visitor_phone, visitorEmail, person_to_meet, reason_of_visit):
-        email_sender = '21311A0569@sreenidhi.edu.in'
-        email_password = 'hbmmykgtaadqnjpp'
+        email_sender = 'yourMail@gmail.com'
+        email_password = 'passwordHere'
         email_recipient, flag = self.fetchEmail(person_to_meet)
 
         if flag == 1:
